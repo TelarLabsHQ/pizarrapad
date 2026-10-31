@@ -98,7 +98,10 @@ def home():
 <ol class="steps"><li><h3>Open the board</h3><p>Go to <a href="/board/">the board</a> on your laptop, tablet or phone. Add it to your home screen to use it like an app.</p></li>
 <li><h3>Pick your board and tools</h3><p>Tap ⋯ to choose whiteboard, blackboard or greenboard and plain, lined or grid. Pick the pen, color and thickness in the tool bar.</p></li>
 <li><h3>Show it to the class</h3><p>Connect your laptop to the projector or TV, or mirror your tablet. <a href="/projector/">See the options</a>.</p></li></ol></section>
-<section class="wrap section"><div class="callout"><h2>Built for real classrooms</h2><p>Big buttons for tablets, readable from the back row, Filipino and English menus, and it keeps working when the internet doesn't. PizarraPad is free because the information pages show a few ads; the board itself never shows ads while you teach.</p><a class="btn" href="/board/">Open the board</a></div></section>'''
+<section class="wrap section"><h2>Coming next</h2><div class="feats">
+<div class="feat"><h3>Images and worksheets</h3><p>Add photos, diagrams and worksheet pages to your board, then write on top of them.</p></div>
+<div class="feat"><h3>Phone-to-projector sync</h3><p>Write on your phone or tablet anywhere in the room while the board appears on the projector computer. No cables.</p></div></div></section>
+<section class="wrap section"><div class="callout"><h2>Built for real classrooms</h2><p>Big buttons for tablets, readable from the back row, and it keeps working when the internet doesn't. PizarraPad is free because the information pages show a few ads; the board itself never shows ads while you teach.</p><a class="btn" href="/board/">Open the board</a></div></section>'''
     page('/', f'{NAME} – Free Online Whiteboard, Blackboard & Greenboard for Teachers',
          'Free online whiteboard, blackboard and greenboard for teachers. Write with a stylus, finger or mouse, or type. Works offline, no sign-up.', body)
 
@@ -117,8 +120,8 @@ def pages():
 <li><b>Undo / Redo:</b> step back or forward. Keyboard: Ctrl+Z and Ctrl+Y (⌘ on Mac).</li>
 <li><b>Hide:</b> tucks the tool bar away for a clean screen. Tap <b>Tools</b> to bring it back.</li>
 </ul>
-<h2>Board, background and language</h2>
-<p>Tap <b>⋯</b> at the top right to choose <b>Whiteboard</b>, <b>Blackboard</b> or <b>Greenboard</b>; a <b>Plain</b>, <b>Lines</b> (handwriting guide) or <b>Grid</b> background; and <b>English</b> or <b>Filipino</b> menus. Pen colors adjust automatically so they're easy to see on each board.</p>
+<h2>Board and background</h2>
+<p>Tap <b>⋯</b> at the top right to choose <b>Whiteboard</b>, <b>Blackboard</b> or <b>Greenboard</b>; a <b>Plain</b>, <b>Lines</b> (handwriting guide) or <b>Grid</b> background. Pen colors adjust automatically so they're easy to see on each board.</p>
 <h2>Writing with a stylus (Pen only)</h2>
 <p>Turn on <b>Pen only</b> at the top. Your stylus draws, while fingers scroll and pinch-zoom, so resting your palm on a tablet won't leave marks. Turn it off if you want to draw with your finger.</p>
 <h2>Moving around</h2>
@@ -148,7 +151,7 @@ def pages():
 <h2>Tips for the back row</h2>
 <ul><li>Use the <b>Thick</b> pen and <b>Large</b> text.</li><li>On bright projectors, the <b>Blackboard</b> or <b>Greenboard</b> with yellow or white chalk is easiest to read.</li>
 <li>Hide the tool bar for a clean screen while you explain.</li></ul>
-<p class="muted">Coming later: write on your phone and have it appear on the projector computer automatically, without cables.</p>''')
+<p class="muted">Coming soon: write on your phone or tablet and have it appear on the projector computer automatically, without cables, plus adding images and worksheets to the board.</p>''')
     faq = [('Is PizarraPad really free?', 'Yes. There is no paid plan, no sign-up and no page limit. The information pages show a few ads to cover costs; the board itself never shows ads.'),
            ('Do I need to create an account?', 'No. Open the board and start teaching.'),
            ('Where is my work saved?', 'In your browser on your own device. Nothing is uploaded to our servers. Clearing your browser data will remove saved boards, so save important pages as images.'),
@@ -156,7 +159,7 @@ def pages():
            ('Which styluses work?', 'Any stylus your device supports as a pen: Samsung S Pen, Apple Pencil, Surface Pen, Wacom and others. Pressure sensitivity works where the device provides it.'),
            ('Can students use it?', 'Yes, it works on any device with a browser. Each device keeps its own boards.'),
            ('Can I install it like an app?', 'Yes. In Chrome or Edge choose "Install app" or "Add to home screen"; on iPad/iPhone use Share → Add to Home Screen.'),
-           ('Can I use it in Filipino?', 'Yes. Tap ⋯ → Language → Filipino.')]
+           ('Can I add pictures or use my phone with the projector computer?', 'Not yet. A version that lets you add images and worksheets, and sync your phone or tablet with the board on the projector, is coming soon.')]
     prose('/faq/', 'Frequently Asked Questions', f'Answers to common questions about {NAME}.', '<h1>Frequently asked questions</h1>' + ''.join(f'<h2>{E(q)}</h2><p>{E(a)}</p>' for q, a in faq))
     prose('/about/', 'About', f'About {NAME} by {ST}.', f'''
 <h1>About {E(NAME)}</h1>

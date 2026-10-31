@@ -117,6 +117,8 @@ svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke
 @media (prefers-reduced-motion: reduce){*{transition:none !important}}
 body{margin:0}
 [hidden]{display:none !important}
+
+.soon{font-size:13px;line-height:1.45;color:var(--muted);background:var(--chrome-2);border-radius:12px;padding:10px 12px}
 #homeLink{display:grid;place-items:center;color:inherit;text-decoration:none}
 </style>
 </head>
@@ -165,14 +167,13 @@ body{margin:0}
     <div class="seg" id="segBoard"><button data-v="white" data-i="whiteboard">Whiteboard</button><button data-v="black" data-i="blackboard">Blackboard</button><button data-v="green" data-i="greenboard">Greenboard</button></div></div>
   <div><div class="mlbl" data-i="background">Background</div>
     <div class="seg" id="segTpl"><button data-v="plain" data-i="plain">Plain</button><button data-v="lines" data-i="lines">Lines</button><button data-v="grid" data-i="grid">Grid</button></div></div>
-  <div><div class="mlbl" data-i="language">Language</div>
-    <div class="seg" id="segLang"><button data-v="en">English</button><button data-v="fil">Filipino</button></div></div>
   <div class="mlist">
     <button class="mbtn" id="fsBtn"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg><span data-i="fullscreen">Full screen</span></button>
     <button class="mbtn" id="saveImg"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14"/></svg><span data-i="saveImg">Save page as image</span></button>
     <button class="mbtn danger" id="clearBtn"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg><span data-i="clear">Clear page</span></button>
     <button class="mbtn danger" id="newBoardBtn"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="13" rx="1.5"/><path d="M12 9v5M9.5 11.5h5"/></svg><span data-i="newBoard">Start a new board</span></button>
   </div>
+  <div class="soon"><b>Coming soon:</b> add images and worksheets to your board, and write on your phone or tablet while it shows on the projector.</div>
 </div>
 
 <div id="scrim" hidden>
@@ -192,12 +193,7 @@ const L={
   penOnly:'Pen only',boardStyle:'Board',whiteboard:'Whiteboard',blackboard:'Blackboard',greenboard:'Greenboard',saveImg:'Save page as image',newBoard:'Start a new board',newQ:'Start a new board?',newNote:'All pages on this device will be erased. Save any page you need first.',newYes:'Start new',saved:'Image saved',background:'Background',plain:'Plain',lines:'Lines',grid:'Grid',
   language:'Language',fullscreen:'Full screen',clear:'Clear page',clearQ:'Clear everything on this page?',clearNote:'You can bring it back with Undo.',
   cancel:'Cancel',clearYes:'Clear page',page:'Page',of:'of',colors:'Color',size:'Thickness',shapes:'Shape',tsize:'Text size',bold:'Bold',
-  thin:'Thin',med:'Medium',thick:'Thick',small:'S',medium:'M',large:'L',penOn:'Pen only: fingers scroll and zoom',penOff:'Fingers can draw',newp:'New page added',noFs:'Full screen is not available here'},
- fil:{pen:'Panulat',hl:'Pangkulay',eraser:'Pambura',text:'Teksto',shape:'Hugis',laser:'Laser',style:'Kulay',undo:'Bawiin',redo:'Ulitin',hide:'Itago',tools:'Kagamitan',
-  penOnly:'Pen lang',boardStyle:'Pisara',whiteboard:'Puti',blackboard:'Itim',greenboard:'Berde',saveImg:'I-save ang pahina bilang larawan',newBoard:'Bagong pisara',newQ:'Magsimula ng bagong pisara?',newNote:'Mabubura ang lahat ng pahina sa device na ito. I-save muna ang kailangan mo.',newYes:'Bago',saved:'Na-save ang larawan',background:'Likuran',plain:'Payak',lines:'Linya',grid:'Grid',
-  language:'Wika',fullscreen:'Buong screen',clear:'Burahin ang pahina',clearQ:'Burahin lahat sa pahinang ito?',clearNote:'Maibabalik mo ito gamit ang Bawiin.',
-  cancel:'Huwag',clearYes:'Burahin',page:'Pahina',of:'ng',colors:'Kulay',size:'Kapal',shapes:'Hugis',tsize:'Laki ng teksto',bold:'Makapal',
-  thin:'Manipis',med:'Katamtaman',thick:'Makapal',small:'S',medium:'M',large:'L',penOn:'Pen lang: daliri ay pang-scroll at zoom',penOff:'Puwedeng gumuhit gamit ang daliri',newp:'May bagong pahina',noFs:'Hindi available ang buong screen dito'}
+  thin:'Thin',med:'Medium',thick:'Thick',small:'S',medium:'M',large:'L',penOn:'Pen only: fingers scroll and zoom',penOff:'Fingers can draw',newp:'New page added',noFs:'Full screen is not available here'}
 };
 const PAL={
  white:{bg:'#FBFCFA',tpl:'rgba(40,90,140,.18)',tplMid:'rgba(200,60,60,.30)',c:{ink:'#1B1F24',red:'#D7263D',blue:'#1F5FBF',green:'#1E8A4C',yellow:'#D69A00',orange:'#E36414'}},
@@ -213,7 +209,7 @@ let S={pages:[{objs:[]}],page:0,board:'white',tpl:'plain',penOnly:false,lang:'en
 let loaded=false;
 try{const raw=localStorage.getItem(KEY); if(raw){const d=JSON.parse(raw); if(d&&Array.isArray(d.pages)&&d.pages.length){S=Object.assign(S,d);loaded=true}}}catch(e){}
 if(!loaded) S.pages=[{objs:seed()}];
-S.page=Math.min(S.page,S.pages.length-1);
+S.page=Math.min(S.page,S.pages.length-1); S.lang='en';
 
 const hist=new Map();
 const H=()=>{const p=S.pages[S.page]; if(!p.hid) p.hid=uid(); if(!hist.has(p.hid)) hist.set(p.hid,{u:[],r:[]}); return hist.get(p.hid)};
@@ -444,7 +440,7 @@ function commitEditor(){
 
 /* ---------- UI ---------- */
 function t(k){return (L[S.lang]||L.en)[k]||L.en[k]||k}
-function applyLang(){ $$('[data-i]').forEach(el=>el.textContent=t(el.dataset.i)); updatePage(); document.documentElement.lang=S.lang==='fil'?'fil':'en'}
+function applyLang(){ $$('[data-i]').forEach(el=>el.textContent=t(el.dataset.i)); updatePage(); document.documentElement.lang='en'}
 function updatePage(){ $('#pageLbl').textContent=`${t('page')} ${S.page+1} ${t('of')} ${S.pages.length}`; $('#prev').disabled=S.page===0; $('#next').disabled=S.page>=S.pages.length-1}
 function setTool(tool){ commitEditor(); S.tool=tool; $$('.tb[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===tool)); live.className='t-'+tool;
   $('#swatch').disabled=(tool==='eraser'||tool==='laser'); updateSwatch(); if(!$('#opts').hidden) renderOpts(); save()}
@@ -494,7 +490,6 @@ function seg(id,key,after){ $$(`#${id} button`).forEach(b=>{b.setAttribute('aria
   b.onclick=()=>{S[key]=b.dataset.v; seg(id,key,after); after&&after(); save()}})}
 seg('segBoard','board',()=>{requestBase(); updateSwatch(); if(edObj) styleEditor()});
 seg('segTpl','tpl',requestBase);
-seg('segLang','lang',applyLang);
 $('#fsBtn').addEventListener('click',()=>{const el=document.documentElement; closePopovers();
   try{ if(document.fullscreenElement) document.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen().catch(()=>toast(t('noFs'))); else toast(t('noFs')) }catch(_){toast(t('noFs'))}});
 let confirmMode='clear';

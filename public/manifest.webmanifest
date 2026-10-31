@@ -1,0 +1,15 @@
+{
+  "name": "PizarraPad",
+  "short_name": "PizarraPad",
+  "description": "Free whiteboard, blackboard and greenboard for teachers.",
+  "start_url": "/board/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#203A2F",
+  "theme_color": "#1D7A50",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

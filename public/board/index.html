@@ -37,6 +37,7 @@ body{background:var(--chrome);color:var(--fg);font-family:var(--f-ui);font-size:
 #live{touch-action:none;cursor:crosshair}
 #live.t-text{cursor:text}
 #live.t-eraser{cursor:cell}
+#live.t-img{cursor:default}
 
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-user-select:none}
 button:focus-visible,.seg button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
@@ -126,6 +127,7 @@ body{margin:0}
 <div id="stage">
   <canvas id="base"></canvas>
   <canvas id="live" class="t-pen" aria-label="Drawing board"></canvas>
+  <input type="file" id="imgFile" accept="image/*" hidden>
   <textarea id="ed" hidden spellcheck="false" aria-label="Text on board"></textarea>
 </div>
 
@@ -151,6 +153,7 @@ body{margin:0}
   <button class="tb" data-tool="text"><svg class="i" viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg><span data-i="text">Text</span></button>
   <button class="tb" data-tool="shape"><svg class="i" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="9" height="9" rx="1"/><circle cx="16" cy="16" r="4.5"/></svg><span data-i="shape">Shape</span></button>
   <button class="tb" data-tool="laser"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2 2M16.4 16.4l2 2M5.6 18.4l2-2M16.4 7.6l2-2"/></svg><span data-i="laser">Laser</span></button>
+  <button class="tb" data-tool="img"><svg class="i" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16l-5-5-8.5 8.5"/></svg><span data-i="img">Image</span></button>
   <div class="vsep"></div>
   <button class="tb" id="swatch" aria-expanded="false"><span class="dot"><i></i></span><span data-i="style">Color</span></button>
   <div class="vsep"></div>
@@ -167,13 +170,15 @@ body{margin:0}
     <div class="seg" id="segBoard"><button data-v="white" data-i="whiteboard">Whiteboard</button><button data-v="black" data-i="blackboard">Blackboard</button><button data-v="green" data-i="greenboard">Greenboard</button></div></div>
   <div><div class="mlbl" data-i="background">Background</div>
     <div class="seg" id="segTpl"><button data-v="plain" data-i="plain">Plain</button><button data-v="lines" data-i="lines">Lines</button><button data-v="grid" data-i="grid">Grid</button></div></div>
+  <div><div class="mlbl" data-i="language">Language</div>
+    <div class="seg" id="segLang"><button data-v="en" lang="en">English</button><button data-v="es" lang="es">Español</button><button data-v="zh" lang="zh-Hans">中文</button></div></div>
   <div class="mlist">
     <button class="mbtn" id="fsBtn"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg><span data-i="fullscreen">Full screen</span></button>
     <button class="mbtn" id="saveImg"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14"/></svg><span data-i="saveImg">Save page as image</span></button>
     <button class="mbtn danger" id="clearBtn"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg><span data-i="clear">Clear page</span></button>
     <button class="mbtn danger" id="newBoardBtn"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="13" rx="1.5"/><path d="M12 9v5M9.5 11.5h5"/></svg><span data-i="newBoard">Start a new board</span></button>
   </div>
-  <div class="soon"><b>Coming soon:</b> add images and worksheets to your board, and write on your phone or tablet while it shows on the projector.</div>
+  <div class="soon"><b data-i="soonT">Coming soon:</b> <span data-i="soonD">a library of maps and worksheets, and writing on your phone or tablet while it shows on the projector.</span></div>
 </div>
 
 <div id="scrim" hidden>
@@ -189,11 +194,13 @@ body{margin:0}
 (()=>{
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const L={
- en:{pen:'Pen',hl:'Highlight',eraser:'Eraser',text:'Text',shape:'Shape',laser:'Laser',style:'Color',undo:'Undo',redo:'Redo',hide:'Hide',tools:'Tools',
+ en:{img:'Image',imgHint:'Tap an image to select it: drag to move, drag the corner to resize, × to remove. Tap empty space to add another.',imgAdded:'Image added. Drag to move; drag the corner dot to resize.',imgErr:'Sorry, that image could not be added.',imgDel:'Image removed',pen:'Pen',hl:'Highlight',eraser:'Eraser',text:'Text',shape:'Shape',laser:'Laser',style:'Color',undo:'Undo',redo:'Redo',hide:'Hide',tools:'Tools',
   penOnly:'Pen only',boardStyle:'Board',whiteboard:'Whiteboard',blackboard:'Blackboard',greenboard:'Greenboard',saveImg:'Save page as image',newBoard:'Start a new board',newQ:'Start a new board?',newNote:'All pages on this device will be erased. Save any page you need first.',newYes:'Start new',saved:'Image saved',background:'Background',plain:'Plain',lines:'Lines',grid:'Grid',
   language:'Language',fullscreen:'Full screen',clear:'Clear page',clearQ:'Clear everything on this page?',clearNote:'You can bring it back with Undo.',
   cancel:'Cancel',clearYes:'Clear page',page:'Page',of:'of',colors:'Color',size:'Thickness',shapes:'Shape',tsize:'Text size',bold:'Bold',
-  thin:'Thin',med:'Medium',thick:'Thick',small:'S',medium:'M',large:'L',penOn:'Pen only: fingers scroll and zoom',penOff:'Fingers can draw',newp:'New page added',noFs:'Full screen is not available here'}
+  thin:'Thin',med:'Medium',thick:'Thick',small:'S',medium:'M',large:'L',penOn:'Pen only: fingers scroll and zoom',penOff:'Fingers can draw',newp:'New page added',noFs:'Full screen is not available here',pageFmt:'Page {n} of {m}',soonT:'Coming soon:',soonD:'a library of maps and worksheets, and writing on your phone or tablet while it shows on the projector.'},
+ es:{img:'Imagen',imgHint:'Toca una imagen para seleccionarla: arrástrala para moverla, arrastra la esquina para cambiar su tamaño y toca × para quitarla. Toca un espacio vacío para agregar otra.',imgAdded:'Imagen agregada. Arrástrala para moverla; arrastra el punto de la esquina para cambiar su tamaño.',imgErr:'No se pudo agregar esa imagen.',imgDel:'Imagen eliminada',pen:'Lápiz',hl:'Resaltador',eraser:'Borrador',text:'Texto',shape:'Forma',laser:'Láser',style:'Color',undo:'Deshacer',redo:'Rehacer',hide:'Ocultar',tools:'Herramientas',penOnly:'Solo lápiz',boardStyle:'Pizarra',whiteboard:'Blanca',blackboard:'Negra',greenboard:'Verde',saveImg:'Guardar página como imagen',newBoard:'Empezar una pizarra nueva',newQ:'¿Empezar una pizarra nueva?',newNote:'Se borrarán todas las páginas de este dispositivo. Guarda primero las páginas que necesites.',newYes:'Empezar',saved:'Imagen guardada',background:'Fondo',plain:'Liso',lines:'Líneas',grid:'Cuadrícula',language:'Idioma',fullscreen:'Pantalla completa',clear:'Borrar página',clearQ:'¿Borrar todo en esta página?',clearNote:'Puedes recuperarlo con Deshacer.',cancel:'Cancelar',clearYes:'Borrar página',page:'Página',of:'de',colors:'Color',size:'Grosor',shapes:'Forma',tsize:'Tamaño del texto',bold:'Negrita',thin:'Fino',med:'Medio',thick:'Grueso',small:'P',medium:'M',large:'G',penOn:'Solo lápiz: los dedos desplazan y hacen zoom',penOff:'Los dedos pueden dibujar',newp:'Página nueva agregada',noFs:'La pantalla completa no está disponible aquí',pageFmt:'Página {n} de {m}',soonT:'Próximamente:',soonD:'una biblioteca de mapas y hojas de trabajo, y escribir en tu teléfono o tableta mientras se ve en el proyector.'},
+ zh:{img:'图片',imgHint:'点击图片即可选中：拖动可移动，拖动角上的圆点可调整大小，点 × 可删除。点击空白处可再添加一张。',imgAdded:'已添加图片。拖动可移动，拖动角上的圆点可调整大小。',imgErr:'抱歉，无法添加这张图片。',imgDel:'已删除图片',pen:'笔',hl:'荧光笔',eraser:'橡皮擦',text:'文字',shape:'形状',laser:'激光笔',style:'颜色',undo:'撤销',redo:'重做',hide:'隐藏',tools:'工具',penOnly:'仅限触控笔',boardStyle:'板面',whiteboard:'白板',blackboard:'黑板',greenboard:'绿板',saveImg:'将本页保存为图片',newBoard:'新建板面',newQ:'要新建板面吗？',newNote:'此设备上的所有页面都将被清除。请先保存需要的页面。',newYes:'新建',saved:'图片已保存',background:'背景',plain:'空白',lines:'横线',grid:'方格',language:'语言',fullscreen:'全屏',clear:'清空本页',clearQ:'要清空本页的所有内容吗？',clearNote:'可以用“撤销”恢复。',cancel:'取消',clearYes:'清空本页',page:'第',of:'/',colors:'颜色',size:'粗细',shapes:'形状',tsize:'字号',bold:'加粗',thin:'细',med:'中',thick:'粗',small:'小',medium:'中',large:'大',penOn:'仅限触控笔：手指用于滚动和缩放',penOff:'手指也可以书写',newp:'已添加新页面',noFs:'此处无法使用全屏',pageFmt:'第 {n} 页 / 共 {m} 页',soonT:'即将推出：',soonD:'地图和练习纸素材库，以及在手机或平板上书写并同步显示在投影上。'}
 };
 const PAL={
  white:{bg:'#FBFCFA',tpl:'rgba(40,90,140,.18)',tplMid:'rgba(200,60,60,.30)',c:{ink:'#1B1F24',red:'#D7263D',blue:'#1F5FBF',green:'#1E8A4C',yellow:'#D69A00',orange:'#E36414'}},
@@ -205,11 +212,12 @@ const SIZES=[2,4,9], TSIZES=[22,34,52];
 const KEY='pizarrapad.v1';
 const uid=()=>Math.random().toString(36).slice(2,10);
 
-let S={pages:[{objs:[]}],page:0,board:'white',tpl:'plain',penOnly:false,lang:'en',tool:'pen',color:'ink',size:1,tsize:1,bold:false,shape:'rect'};
+let S={pages:[{objs:[]}],page:0,board:'white',tpl:'plain',penOnly:false,lang:'',tool:'pen',color:'ink',size:1,tsize:1,bold:false,shape:'rect'};
 let loaded=false;
 try{const raw=localStorage.getItem(KEY); if(raw){const d=JSON.parse(raw); if(d&&Array.isArray(d.pages)&&d.pages.length){S=Object.assign(S,d);loaded=true}}}catch(e){}
 if(!loaded) S.pages=[{objs:seed()}];
-S.page=Math.min(S.page,S.pages.length-1); S.lang='en';
+S.page=Math.min(S.page,S.pages.length-1);
+if(!['en','es','zh'].includes(S.lang)){ const nl=(navigator.language||'en').toLowerCase(); S.lang=nl.startsWith('es')?'es':nl.startsWith('zh')?'zh':'en' }
 
 const hist=new Map();
 const H=()=>{const p=S.pages[S.page]; if(!p.hid) p.hid=uid(); if(!hist.has(p.hid)) hist.set(p.hid,{u:[],r:[]}); return hist.get(p.hid)};
@@ -261,7 +269,23 @@ function drawTemplate(c){
   } c.setLineDash([]);
 }
 const mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+/* ---------- images: pictures are stored in IndexedDB on this device; the board keeps only their id ---------- */
+const IDB={p:null,
+  open(){ if(!this.p) this.p=new Promise((res,rej)=>{const r=indexedDB.open('pizarrapad-images',1); r.onupgradeneeded=()=>r.result.createObjectStore('img'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error)}); return this.p },
+  async run(mode,fn){ const db=await this.open(); return new Promise((res,rej)=>{const tx=db.transaction('img',mode); const st=tx.objectStore('img'); const r=fn(st); tx.oncomplete=()=>res(r&&r.result); tx.onerror=()=>rej(tx.error)}) },
+  put(id,b){return this.run('readwrite',st=>st.put(b,id))}, get(id){return this.run('readonly',st=>st.get(id))},
+  keys(){return this.run('readonly',st=>st.getAllKeys())}, del(id){return this.run('readwrite',st=>st.delete(id))} };
+const IMG=new Map();
+function imgEl(id){ let e=IMG.get(id); if(e) return e; e={el:null}; IMG.set(id,e);
+  IDB.get(id).then(b=>{ if(!b){e.missing=true; return} const im=new Image(); im.onload=()=>{e.el=im; requestBase(); requestLive()}; im.src=URL.createObjectURL(b) }).catch(()=>{e.missing=true});
+  return e }
+function gcImages(){ const used=new Set(); S.pages.forEach(pg=>pg.objs.forEach(o=>{ if(o.t==='i') used.add(o.src) }));
+  IDB.keys().then(ks=>(ks||[]).forEach(k=>{ if(!used.has(k)) IDB.del(k).catch(()=>{}) })).catch(()=>{}) }
 function drawObj(c,o){
+  if(o.t==='i'){ const e=imgEl(o.src); c.globalAlpha=1;
+    if(e.el) c.drawImage(e.el,o.x,o.y,o.w,o.h);
+    else { c.fillStyle='rgba(128,128,128,.14)'; c.fillRect(o.x,o.y,o.w,o.h); c.strokeStyle='rgba(128,128,128,.45)'; c.lineWidth=1.5/v.s; c.strokeRect(o.x,o.y,o.w,o.h) }
+    return }
   c.globalAlpha=1; c.lineCap='round'; c.lineJoin='round';
   if(o.t==='p'){
     const pts=o.pts, color=col(o.c);
@@ -302,6 +326,11 @@ function drawLive(){
   const c=lctx; c.setTransform(dpr,0,0,dpr,0,0); c.clearRect(0,0,W,Hh);
   c.setTransform(dpr*v.s,0,0,dpr*v.s,dpr*v.x,dpr*v.y);
   if(act&&(act.type==='draw'||act.type==='shape')) drawObj(c,act.o);
+  const so=selImg&&S.tool==='img'&&objs().find(x=>x.id===selImg);
+  if(so){ const hs=9/v.s; c.globalAlpha=1; c.setLineDash([8/v.s,6/v.s]); c.strokeStyle='#1D7A50'; c.lineWidth=2.5/v.s; c.strokeRect(so.x,so.y,so.w,so.h); c.setLineDash([]);
+    c.fillStyle='#1D7A50'; c.beginPath(); c.arc(so.x+so.w,so.y+so.h,hs,0,Math.PI*2); c.fill(); c.strokeStyle='#fff'; c.lineWidth=2/v.s; c.stroke();
+    c.fillStyle='#C2253A'; c.beginPath(); c.arc(so.x+so.w,so.y,hs*1.4,0,Math.PI*2); c.fill();
+    c.strokeStyle='#fff'; c.lineWidth=2.4/v.s; const d=hs*.6; c.beginPath(); c.moveTo(so.x+so.w-d,so.y-d); c.lineTo(so.x+so.w+d,so.y+d); c.moveTo(so.x+so.w+d,so.y-d); c.lineTo(so.x+so.w-d,so.y+d); c.stroke() }
   const now=performance.now(); laser=laser.filter(p=>now-p.t<1000);
   if(laser.length){
     c.lineCap='round';
@@ -390,7 +419,18 @@ function startTool(e,sp){
   else if(tool==='shape'){act={...base,type:'shape',o:{id:uid(),t:'s',k:S.shape,c:S.color,w:SIZES[S.size],a:p,b:p}}}
   else if(tool==='laser'){act={...base,type:'laser'}; laser.push({x:p[0],y:p[1],t:performance.now()}); requestLive()}
   else if(tool==='text'){const h=hitText(p); act={...base,type:'text',hit:h,sx:sp[0],sy:sp[1],p0:p,ox:h?h.x:0,oy:h?h.y:0,moved:false}}
+  else if(tool==='img'){
+    const o=selImg&&objs().find(x=>x.id===selImg), hs=9/v.s;
+    if(o&&Math.hypot(p[0]-(o.x+o.w),p[1]-o.y)<hs*2.4){ removeImg(o); return }
+    if(o&&Math.hypot(p[0]-(o.x+o.w),p[1]-(o.y+o.h))<hs*2.6){ act={...base,type:'iresize',o,w0:o.w,h0:o.h,p0:p,moved:false}; return }
+    const h=hitImg(p);
+    if(h){ selImg=h.id; act={...base,type:'imove',o:h,p0:p,ox:h.x,oy:h.y,moved:false}; requestLive(); return }
+    if(selImg){ selImg=null; requestLive(); return }
+    pickImage(p);
+  }
 }
+const hitImg=p=>{const a=objs(); for(let i=a.length-1;i>=0;i--){const o=a[i]; if(o.t==='i'&&p[0]>=o.x&&p[0]<=o.x+o.w&&p[1]>=o.y&&p[1]<=o.y+o.h) return o} return null};
+function removeImg(o){ pushHistory(); const arr=objs(); const k=arr.indexOf(o); if(k>-1) arr.splice(k,1); selImg=null; changed(); requestLive(); toast(t('imgDel')) }
 function moveTool(e,sp){
   const p=s2w(sp[0],sp[1]);
   if(act.type==='draw'){const pts=act.o.pts, l=pts[pts.length-1]; if(Math.hypot(p[0]-l[0],p[1]-l[1])<0.7/v.s) return;
@@ -398,6 +438,11 @@ function moveTool(e,sp){
   else if(act.type==='erase') eraseAt(p);
   else if(act.type==='shape'){act.o.b=p; requestLive()}
   else if(act.type==='laser'){laser.push({x:p[0],y:p[1],t:performance.now()}); requestLive()}
+  else if(act.type==='imove'){ if(!act.moved&&Math.hypot(p[0]-act.p0[0],p[1]-act.p0[1])*v.s>4){act.moved=true; pushHistory()}
+    if(act.moved){act.o.x=act.ox+p[0]-act.p0[0]; act.o.y=act.oy+p[1]-act.p0[1]; requestBase(); requestLive()} }
+  else if(act.type==='iresize'){ if(!act.moved){act.moved=true; pushHistory()}
+    const k=Math.max(24/v.s/act.w0, Math.max((act.w0+p[0]-act.p0[0])/act.w0,(act.h0+p[1]-act.p0[1])/act.h0));
+    act.o.w=act.w0*k; act.o.h=act.h0*k; requestBase(); requestLive() }
   else if(act.type==='text'&&act.hit){ if(!act.moved&&Math.hypot(sp[0]-act.sx,sp[1]-act.sy)>6){act.moved=true; pushHistory()}
     if(act.moved){act.hit.x=act.ox+p[0]-act.p0[0]; act.hit.y=act.oy+p[1]-act.p0[1]; requestBase()}}
 }
@@ -406,6 +451,7 @@ function endTool(e,sp){
   if(a.type==='draw'){pushHistory(); objs().push(a.o); changed(); requestLive()}
   else if(a.type==='shape'){const [ax,ay]=a.o.a,[bx,by]=a.o.b; if(Math.hypot(bx-ax,by-ay)*v.s>4){pushHistory(); objs().push(a.o); changed()} requestLive()}
   else if(a.type==='erase'){if(a.pushed) save()}
+  else if(a.type==='imove'||a.type==='iresize'){ if(a.moved) changed(); requestLive() }
   else if(a.type==='text'){ if(a.moved) save(); else openEditor(a.hit,a.p0) }
 }
 function eraseAt(p){const r=14/v.s, arr=objs(); let any=false;
@@ -438,15 +484,43 @@ function commitEditor(){
   delete o._before; delete o._dirty; changed();
 }
 
+/* ---------- adding images ---------- */
+let selImg=null, pendingAt=null;
+function viewCenter(){return s2w(W/2,Hh/2)}
+function pickImage(at){ pendingAt=at||null; const f=$('#imgFile'); f.value=''; f.click() }
+$('#imgFile').addEventListener('change',e=>{ const f=e.target.files&&e.target.files[0]; if(f) addImageFile(f,pendingAt) });
+async function addImageFile(file,at){
+  if(!file||!/^image\//.test(file.type)){ toast(t('imgErr')); return }
+  try{
+    const url=URL.createObjectURL(file); const im=await new Promise((res,rej)=>{const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url});
+    const MAX=1600, k0=Math.min(1,MAX/Math.max(im.naturalWidth,im.naturalHeight)), iw=Math.max(1,Math.round(im.naturalWidth*k0)), ih=Math.max(1,Math.round(im.naturalHeight*k0));
+    const cv=document.createElement('canvas'); cv.width=iw; cv.height=ih; const cx=cv.getContext('2d');
+    const png=file.type==='image/png'||file.type==='image/gif'||file.type==='image/webp';
+    if(!png){ cx.fillStyle='#fff'; cx.fillRect(0,0,iw,ih) }
+    cx.drawImage(im,0,0,iw,ih); URL.revokeObjectURL(url);
+    const blob=await new Promise(res=>cv.toBlob(res,png?'image/png':'image/jpeg',.85)); if(!blob) throw new Error('encode');
+    const id=uid(); await IDB.put(id,blob);
+    const el=new Image(); el.src=URL.createObjectURL(blob); IMG.set(id,{el}); await new Promise(r=>{el.onload=r; el.onerror=r});
+    const vw=W*.6/v.s, vh=Hh*.6/v.s, k=Math.min(vw/iw,vh/ih), w=iw*k, h=ih*k; const c=at||viewCenter();
+    const o={id:uid(),t:'i',src:id,x:c[0]-w/2,y:c[1]-h/2,w,h};
+    pushHistory(); objs().unshift(o); if(S.tool!=='img') setTool('img'); selImg=o.id; changed(); requestLive(); toast(t('imgAdded'));
+  }catch(err){ toast(t('imgErr')) }
+}
+document.addEventListener('paste',e=>{ if(editing||e.target.closest&&e.target.closest('input,textarea')) return;
+  const it=[...(e.clipboardData&&e.clipboardData.items||[])].find(x=>x.type&&x.type.startsWith('image/')); if(!it) return;
+  e.preventDefault(); addImageFile(it.getAsFile(),null) });
+live.addEventListener('dragover',e=>{ e.preventDefault() });
+live.addEventListener('drop',e=>{ e.preventDefault(); const f=[...(e.dataTransfer&&e.dataTransfer.files||[])].find(x=>x.type.startsWith('image/')); if(f){const sp=rel(e); addImageFile(f,s2w(sp[0],sp[1]))} });
+
 /* ---------- UI ---------- */
 function t(k){return (L[S.lang]||L.en)[k]||L.en[k]||k}
-function applyLang(){ $$('[data-i]').forEach(el=>el.textContent=t(el.dataset.i)); updatePage(); document.documentElement.lang='en'}
-function updatePage(){ $('#pageLbl').textContent=`${t('page')} ${S.page+1} ${t('of')} ${S.pages.length}`; $('#prev').disabled=S.page===0; $('#next').disabled=S.page>=S.pages.length-1}
-function setTool(tool){ commitEditor(); S.tool=tool; $$('.tb[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===tool)); live.className='t-'+tool;
-  $('#swatch').disabled=(tool==='eraser'||tool==='laser'); updateSwatch(); if(!$('#opts').hidden) renderOpts(); save()}
+function applyLang(){ $$('[data-i]').forEach(el=>el.textContent=t(el.dataset.i)); updatePage(); document.documentElement.lang=S.lang==='zh'?'zh-Hans':S.lang}
+function updatePage(){ $('#pageLbl').textContent=t('pageFmt').replace('{n}',S.page+1).replace('{m}',S.pages.length); $('#prev').disabled=S.page===0; $('#next').disabled=S.page>=S.pages.length-1}
+function setTool(tool){ commitEditor(); if(tool!=='img'&&selImg){selImg=null; requestLive()} S.tool=tool; $$('.tb[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===tool)); live.className='t-'+tool;
+  $('#swatch').disabled=(tool==='eraser'||tool==='laser'||tool==='img'); updateSwatch(); if(!$('#opts').hidden) renderOpts(); save()}
 function updateSwatch(){ const d=$('#swatch .dot'), i=d.firstElementChild; d.style.background=col(S.color);
   const sz=S.tool==='text'?[6,9,12][S.tsize]:[5,8,12][S.size]; i.style.width=i.style.height=sz+'px'}
-$$('.tb[data-tool]').forEach(b=>b.addEventListener('click',()=>{ if(S.tool===b.dataset.tool&&b.dataset.tool!=='eraser'&&b.dataset.tool!=='laser'){toggleOpts();return} setTool(b.dataset.tool)}));
+$$('.tb[data-tool]').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.tool==='img'){ if(S.tool==='img'||!objs().some(o=>o.t==='i')){ setTool('img'); pickImage(null) } else { setTool('img'); toast(t('imgHint')) } return } if(S.tool===b.dataset.tool&&b.dataset.tool!=='eraser'&&b.dataset.tool!=='laser'){toggleOpts();return} setTool(b.dataset.tool)}));
 $('#swatch').addEventListener('click',toggleOpts);
 function toggleOpts(){const o=$('#opts'); if(o.hidden){renderOpts(); o.hidden=false; $('#swatch').setAttribute('aria-expanded','true')} else closePopovers()}
 function closePopovers(){$('#opts').hidden=true; $('#menu').hidden=true; $('#swatch').setAttribute('aria-expanded','false'); $('#menuBtn').setAttribute('aria-expanded','false')}
@@ -482,7 +556,7 @@ $('#reopen').addEventListener('click',()=>{$('#dock').hidden=false; $('#reopen')
 $('#prev').addEventListener('click',()=>goPage(S.page-1));
 $('#next').addEventListener('click',()=>goPage(S.page+1));
 $('#newPage').addEventListener('click',()=>{commitEditor(); S.pages.splice(S.page+1,0,{objs:[]}); goPage(S.page+1); v={s:v.s,x:0,y:0}; requestBase(); toast(t('newp'))});
-function goPage(i){ if(i<0||i>=S.pages.length) return; commitEditor(); S.page=i; updatePage(); syncUndo(); requestBase(); save()}
+function goPage(i){ if(i<0||i>=S.pages.length) return; commitEditor(); selImg=null; requestLive(); S.page=i; updatePage(); syncUndo(); requestBase(); save()}
 $('#penOnly').addEventListener('click',()=>{S.penOnly=!S.penOnly; $('#penOnly').setAttribute('aria-pressed',S.penOnly); toast(t(S.penOnly?'penOn':'penOff')); save()});
 $('#fitBtn').addEventListener('click',fit);
 $('#menuBtn').addEventListener('click',()=>{const m=$('#menu'); const open=m.hidden; closePopovers(); m.hidden=!open; $('#menuBtn').setAttribute('aria-expanded',open)});
@@ -490,6 +564,7 @@ function seg(id,key,after){ $$(`#${id} button`).forEach(b=>{b.setAttribute('aria
   b.onclick=()=>{S[key]=b.dataset.v; seg(id,key,after); after&&after(); save()}})}
 seg('segBoard','board',()=>{requestBase(); updateSwatch(); if(edObj) styleEditor()});
 seg('segTpl','tpl',requestBase);
+seg('segLang','lang',()=>{applyLang(); if(!$('#opts').hidden) renderOpts()});
 $('#fsBtn').addEventListener('click',()=>{const el=document.documentElement; closePopovers();
   try{ if(document.fullscreenElement) document.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen().catch(()=>toast(t('noFs'))); else toast(t('noFs')) }catch(_){toast(t('noFs'))}});
 let confirmMode='clear';
@@ -498,13 +573,13 @@ $('#clearBtn').addEventListener('click',()=>ask('clear'));
 $('#newBoardBtn').addEventListener('click',()=>ask('new'));
 $('#saveImg').addEventListener('click',()=>{closePopovers(); commitEditor(); drawBase(); base.toBlob(b=>{if(!b) return; const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`pizarrapad-page-${S.page+1}.png`; document.body.append(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),3000); toast(t('saved'))},'image/png')});
 $('#cNo').addEventListener('click',()=>{$('#scrim').hidden=true});
-$('#cYes').addEventListener('click',()=>{$('#scrim').hidden=true; commitEditor(); if(confirmMode==='new'){S.pages=[{objs:[]}]; S.page=0; hist.clear(); v={s:1,x:0,y:0}; updatePage(); changed(); return} if(objs().length){pushHistory(); S.pages[S.page].objs=[]; changed()}});
-let toastT=0; function toast(msg){const el=$('#toast'); el.textContent=msg; el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>el.hidden=true,1600)}
+$('#cYes').addEventListener('click',()=>{$('#scrim').hidden=true; commitEditor(); if(confirmMode==='new'){S.pages=[{objs:[]}]; S.page=0; hist.clear(); selImg=null; setTimeout(gcImages,500); v={s:1,x:0,y:0}; updatePage(); changed(); return} selImg=null; requestLive(); if(objs().length){pushHistory(); S.pages[S.page].objs=[]; changed()}});
+let toastT=0; function toast(msg){const el=$('#toast'); el.textContent=msg; el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>el.hidden=true,Math.max(1600,msg.length*45))}
 
 function fit(){ closePopovers(); const arr=objs(); if(!arr.length){v={s:1,x:0,y:0}; viewChanged(); return}
   let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
   for(const o of arr){ let pts=[];
-    if(o.t==='p') pts=o.pts; else if(o.t==='s') pts=[o.a,o.b]; else pts=[[o.x,o.y],[o.x+(o._w||100),o.y+(o._h||o.z)]];
+    if(o.t==='p') pts=o.pts; else if(o.t==='s') pts=[o.a,o.b]; else if(o.t==='i') pts=[[o.x,o.y],[o.x+o.w,o.y+o.h]]; else pts=[[o.x,o.y],[o.x+(o._w||100),o.y+(o._h||o.z)]];
     for(const p of pts){x0=Math.min(x0,p[0]);y0=Math.min(y0,p[1]);x1=Math.max(x1,p[0]);y1=Math.max(y1,p[1])} }
   const topPad=70, botPad=100, side=24; const aw=W-side*2, ah=Hh-topPad-botPad;
   const s=clamp(Math.min(aw/Math.max(x1-x0,1),ah/Math.max(y1-y0,1),1.6));
@@ -516,7 +591,8 @@ addEventListener('keydown',e=>{
   if(mod&&e.key.toLowerCase()==='z'){e.preventDefault(); e.shiftKey?redo():undo(); return}
   if(mod&&e.key.toLowerCase()==='y'){e.preventDefault(); redo(); return}
   if(mod) return;
-  const k={p:'pen',h:'hl',e:'eraser',t:'text',s:'shape',l:'laser'}[e.key.toLowerCase()]; if(k) setTool(k);
+  if((e.key==='Delete'||e.key==='Backspace')&&selImg&&S.tool==='img'){ const o=objs().find(x=>x.id===selImg); if(o){e.preventDefault(); removeImg(o)} return }
+  const k={p:'pen',h:'hl',e:'eraser',t:'text',s:'shape',l:'laser',i:'img'}[e.key.toLowerCase()]; if(k) setTool(k);
   if(e.key==='Escape') closePopovers();
 });
 document.addEventListener('pointerdown',e=>{ if(!e.target.closest('#menu,#menuBtn,#opts,#swatch,.tb[data-tool]')) { if(!$('#menu').hidden||!$('#opts').hidden) closePopovers() } },true);
@@ -542,6 +618,7 @@ function seed(){
 $('#penOnly').setAttribute('aria-pressed',S.penOnly);
 applyLang(); setTool(S.tool); resize(); syncUndo();
 drawBase(); fit();
+setTimeout(gcImages,2000);
 document.fonts&&document.fonts.ready.then(()=>{requestBase()});
 })();
 </script>

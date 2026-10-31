@@ -72,8 +72,10 @@ FEATURES = [
     ('Pen-only mode', 'Turn it on and your palm and fingers stop drawing. Fingers scroll and zoom instead, so you can rest your hand on the screen.'),
     ('Type when you prefer', 'Tap with the Text tool and type. Change the size, color or bold, and drag text to move it.'),
     ('Shapes, highlighter, laser', 'Straight lines, arrows, boxes and circles; a see-through highlighter; and a laser pointer that fades away.'),
+    ('Add pictures', 'Insert a photo, diagram or worksheet picture, or snap one with your phone camera. Move and resize it, then write on top.'),
     ('Pages and saving', 'Add as many pages as your lesson needs. Everything saves on your device automatically, and you can save any page as an image.'),
     ('Works offline', 'Once opened, the board keeps working even when the school Wi-Fi drops.'),
+    ('English, Español, 中文', 'The board speaks English, Spanish and Simplified Chinese, and picks your device language automatically.'),
     ('Free, no account', 'No sign-up, no limits on pages, no watermark. Open it and teach.'),
 ]
 
@@ -99,7 +101,7 @@ def home():
 <li><h3>Pick your board and tools</h3><p>Tap ⋯ to choose whiteboard, blackboard or greenboard and plain, lined or grid. Pick the pen, color and thickness in the tool bar.</p></li>
 <li><h3>Show it to the class</h3><p>Connect your laptop to the projector or TV, or mirror your tablet. <a href="/projector/">See the options</a>.</p></li></ol></section>
 <section class="wrap section"><h2>Coming next</h2><div class="feats">
-<div class="feat"><h3>Images and worksheets</h3><p>Add photos, diagrams and worksheet pages to your board, then write on top of them.</p></div>
+<div class="feat"><h3>Maps and worksheets library</h3><p>Ready-made maps, graphs and worksheet pages you can drop onto the board and write on.</p></div>
 <div class="feat"><h3>Phone-to-projector sync</h3><p>Write on your phone or tablet anywhere in the room while the board appears on the projector computer. No cables.</p></div></div></section>
 <section class="wrap section"><div class="callout"><h2>Built for real classrooms</h2><p>Big buttons for tablets, readable from the back row, and it keeps working when the internet doesn't. PizarraPad is free because the information pages show a few ads; the board itself never shows ads while you teach.</p><a class="btn" href="/board/">Open the board</a></div></section>'''
     page('/', f'{NAME} – Free Online Whiteboard, Blackboard & Greenboard for Teachers',
@@ -116,12 +118,15 @@ def pages():
 <li><b>Eraser:</b> drag over any stroke, shape or text to remove it.</li>
 <li><b>Text:</b> tap anywhere and type. Tap existing text to edit it, or drag it to move it. Choose size and bold in the Color panel.</li>
 <li><b>Shape:</b> drag to draw a line, arrow, box or circle. Pick which one in the Color panel.</li>
+<li><b>Image:</b> add a picture from your device (on a phone or tablet you can also take a photo). Drag it to move it, drag the round corner to resize, and tap × to remove it. Your writing always stays on top. You can also paste an image or drag one onto the board.</li>
 <li><b>Laser:</b> point at things for the class; the trail fades after a second.</li>
 <li><b>Undo / Redo:</b> step back or forward. Keyboard: Ctrl+Z and Ctrl+Y (⌘ on Mac).</li>
 <li><b>Hide:</b> tucks the tool bar away for a clean screen. Tap <b>Tools</b> to bring it back.</li>
 </ul>
 <h2>Board and background</h2>
 <p>Tap <b>⋯</b> at the top right to choose <b>Whiteboard</b>, <b>Blackboard</b> or <b>Greenboard</b>; a <b>Plain</b>, <b>Lines</b> (handwriting guide) or <b>Grid</b> background. Pen colors adjust automatically so they're easy to see on each board.</p>
+<h2>Language</h2>
+<p>The board's buttons and menus come in <b>English</b>, <b>Español</b> and <b>中文</b> (Simplified Chinese). It follows your device language at first; change it any time under <b>⋯ → Language</b>.</p>
 <h2>Writing with a stylus (Pen only)</h2>
 <p>Turn on <b>Pen only</b> at the top. Your stylus draws, while fingers scroll and pinch-zoom, so resting your palm on a tablet won't leave marks. Turn it off if you want to draw with your finger.</p>
 <h2>Moving around</h2>
@@ -133,7 +138,7 @@ def pages():
 <h2>Saving your work</h2>
 <p>Everything saves on your device automatically, so you can close the tab and come back later. To keep a copy or share it, choose <b>⋯ → Save page as image</b>. <b>Clear page</b> empties the current page (Undo brings it back); <b>Start a new board</b> erases all pages.</p>
 <h2>Keyboard shortcuts</h2>
-<p><b>P</b> pen · <b>H</b> highlight · <b>E</b> eraser · <b>T</b> text · <b>S</b> shape · <b>L</b> laser · <b>Esc</b> close menus</p>
+<p><b>P</b> pen · <b>H</b> highlight · <b>E</b> eraser · <b>T</b> text · <b>S</b> shape · <b>I</b> image · <b>L</b> laser · <b>Esc</b> close menus</p>
 <p><a class="btn" href="/board/">Open the board</a></p>''')
     prose('/projector/', 'Use PizarraPad with a Projector or TV', 'How to show PizarraPad on a classroom projector, TV or smart board from a laptop, tablet or phone.', f'''
 <h1>Use {E(NAME)} with a projector or TV</h1>
@@ -151,7 +156,7 @@ def pages():
 <h2>Tips for the back row</h2>
 <ul><li>Use the <b>Thick</b> pen and <b>Large</b> text.</li><li>On bright projectors, the <b>Blackboard</b> or <b>Greenboard</b> with yellow or white chalk is easiest to read.</li>
 <li>Hide the tool bar for a clean screen while you explain.</li></ul>
-<p class="muted">Coming soon: write on your phone or tablet and have it appear on the projector computer automatically, without cables, plus adding images and worksheets to the board.</p>''')
+<p class="muted">Coming soon: write on your phone or tablet and have it appear on the projector computer automatically, without cables, plus a library of maps and worksheets.</p>''')
     faq = [('Is PizarraPad really free?', 'Yes. There is no paid plan, no sign-up and no page limit. The information pages show a few ads to cover costs; the board itself never shows ads.'),
            ('Do I need to create an account?', 'No. Open the board and start teaching.'),
            ('Where is my work saved?', 'In your browser on your own device. Nothing is uploaded to our servers. Clearing your browser data will remove saved boards, so save important pages as images.'),
@@ -159,13 +164,15 @@ def pages():
            ('Which styluses work?', 'Any stylus your device supports as a pen: Samsung S Pen, Apple Pencil, Surface Pen, Wacom and others. Pressure sensitivity works where the device provides it.'),
            ('Can students use it?', 'Yes, it works on any device with a browser. Each device keeps its own boards.'),
            ('Can I install it like an app?', 'Yes. In Chrome or Edge choose "Install app" or "Add to home screen"; on iPad/iPhone use Share → Add to Home Screen.'),
-           ('Can I add pictures or use my phone with the projector computer?', 'Not yet. A version that lets you add images and worksheets, and sync your phone or tablet with the board on the projector, is coming soon.')]
+           ('Can I add pictures?', 'Yes. Use the Image tool to add a photo, diagram or worksheet picture, then write on top of it. Pictures are saved on your device with the board.'),
+           ('Which languages does the board support?', 'English, Spanish (Español) and Simplified Chinese (中文). Change it under ⋯ → Language.'),
+           ('Can I use my phone with the projector computer?', 'Not yet. Writing on your phone or tablet while the board shows on the projector computer is coming soon, along with a library of maps and worksheets.')]
     prose('/faq/', 'Frequently Asked Questions', f'Answers to common questions about {NAME}.', '<h1>Frequently asked questions</h1>' + ''.join(f'<h2>{E(q)}</h2><p>{E(a)}</p>' for q, a in faq))
     prose('/about/', 'About', f'About {NAME} by {ST}.', f'''
 <h1>About {E(NAME)}</h1>
 <p class="lead">{E(NAME)} is a free online board for teachers, made by {E(ST)}, a small independent studio.</p>
 <p>Many classrooms have a projector or TV but no expensive interactive board. Teachers end up using slides that can't be written on, or apps with sign-ups, page limits and watermarks. {E(NAME)} gives every teacher a board they can write on with whatever they have: a laptop and mouse, a tablet and stylus, or a phone.</p>
-<p>The name comes from <i>pizarra</i>, the Spanish word for blackboard (<i>pisara</i> in Filipino).</p>
+<p>The name comes from <i>pizarra</i>, the Spanish word for blackboard.</p>
 <h2>Our promises</h2>
 <ul><li>The board stays free, with no sign-up.</li><li>Your boards stay on your device.</li><li>No ads on the board while you teach.</li></ul>
 <h2>Other {E(ST)} tools</h2>

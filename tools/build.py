@@ -14,6 +14,22 @@ NAME = CFG['site_name']; ST = CFG['studio']; MAIL = CFG['contact_email']
 LOGO = ('<svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/>'
         '<path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg>')
 
+
+# ---------------------------------------------------------------- Telar Labs family links
+FAMILY = [f for f in CFG.get('family', []) if f['name'] != CFG['site_name']]
+HUB = CFG.get('studio_url', '')
+
+def family_row():
+    if not FAMILY: return ''
+    head = f'<a href="{E(HUB)}">More from {E(CFG["studio"])}</a>' if HUB else f'More from {E(CFG["studio"])}'
+    links = ''.join(f'<a href="{E(f["url"])}" title="{E(f["blurb"])}">{E(f["name"])}</a>' for f in FAMILY)
+    return f'<div class="wrap family"><span class="family-h">{head}:</span>{links}</div>'
+
+def family_promo(title):
+    if not FAMILY: return ''
+    links = ''.join(f'<a href="{E(f["url"])}"><b>{E(f["name"])}</b><span>{E(f["blurb"])}</span></a>' for f in FAMILY)
+    return f'<section class="wrap section family-promo"><h2>{title}</h2><div class="family-links">{links}</div></section>'
+
 def ad(key):
     slot = CFG['ad_slots'].get(key, '')
     if not (CFG['adsense_client'] and slot): return ''
@@ -56,7 +72,7 @@ def page(path, title, desc, body):
     <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/faq/">FAQ</a></div>
     <div><h4>{E(ST)}</h4><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
   </div>
-</div><div class="wrap fine">&copy; {date.today().year} {E(ST)}.</div></footer>
+</div>{family_row()}<div class="wrap fine">&copy; {date.today().year} {E(ST)}.</div></footer>
 </body>
 </html>'''
     out = os.path.join(PUB, path.strip('/'), 'index.html') if path.endswith('/') else os.path.join(PUB, path.strip('/'))
@@ -104,6 +120,7 @@ def home():
 <div class="feat"><h3>Maps and worksheets library</h3><p>Ready-made maps, graphs and worksheet pages you can drop onto the board and write on.</p></div>
 <div class="feat"><h3>Phone-to-projector sync</h3><p>Write on your phone or tablet anywhere in the room while the board appears on the projector computer. No cables.</p></div></div></section>
 <section class="wrap section"><div class="callout"><h2>Built for real classrooms</h2><p>Big buttons for tablets, readable from the back row, and it keeps working when the internet doesn't. PizarraPad is free because the information pages show a few ads; the board itself never shows ads while you teach.</p><a class="btn" href="/board/">Open the board</a></div></section>'''
+    body += family_promo('More free tools for teachers')
     page('/', f'{NAME} – Free Online Whiteboard, Blackboard & Greenboard for Teachers',
          'Free online whiteboard, blackboard and greenboard for teachers. Write with a stylus, finger or mouse, or type. Works offline, no sign-up.', body)
 

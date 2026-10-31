@@ -26,7 +26,7 @@ p{margin:0 0 1em}.wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 16px}
 .mock-white{background:#FBFCFA;border:1px solid var(--line);width:62%;position:absolute;right:-6px;bottom:-24px;padding:14px}
 .chalk{display:block;color:var(--chalk);font-family:var(--display);font-size:26px}.chalk.t2{color:#FFE16B;font-size:30px;margin-top:6px}
 .mock-green svg{width:70%;margin-top:6px}.ink{font-family:var(--display);font-size:24px;color:#1B1F24}
-.section{padding:40px 0 10px}
+.section{padding-top:40px;padding-bottom:10px}
 .feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:16px}
 .feat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px}.feat p{color:var(--muted);margin:0}
 .steps{list-style:none;counter-reset:s;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
@@ -39,3 +39,10 @@ p{margin:0 0 1em}.wrap{width:100%;max-width:1160px;margin:0 auto;padding:0 16px}
 .foot-in p{font-size:15px;margin-top:10px;max-width:380px}.foot-cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .foot-cols h4{margin:0 0 8px}.foot-cols a{display:block;color:var(--muted);text-decoration:none;padding:3px 0;font-size:15px}.foot-cols a:hover{color:var(--fg)}
 .fine{font-size:13px;color:#7A8A82;padding-bottom:24px}@media(max-width:700px){.foot-in{grid-template-columns:1fr}}
+
+.family{border-top:1px solid var(--line);padding-top:16px;padding-bottom:14px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;font-size:15px}
+.family-h{font-weight:700}.family-h a{color:inherit;text-decoration:none}.family>a{color:var(--muted);text-decoration:none}.family>a:hover{text-decoration:underline}
+.family-links{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.family-links a{display:block;text-decoration:none;color:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:12px}
+.family-links a:hover{border-color:var(--muted)}.family-links b{display:block}.family-links span{display:block;font-size:13px;color:var(--muted);margin-top:3px;line-height:1.4}
+.family-promo .family-links a{padding:16px 18px}.family-promo .family-links b{font-size:17px}.family-promo .family-links span{font-size:14px}

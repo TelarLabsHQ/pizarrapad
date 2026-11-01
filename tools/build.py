@@ -207,6 +207,7 @@ def pages():
 <h2>Your boards</h2><p>Everything you write is saved in your own browser's storage on your device. It is not sent to us. If you clear your browser data, your saved boards are deleted.</p>
 <h2>No accounts</h2><p>We don't ask for your name, email or school to use the board.</p>
 <h2>Advertising</h2>{ads_p}
+<h2>Analytics</h2><p>We use Cloudflare Web Analytics to count page visits. It does not use cookies and does not track you across websites.</p>
 <h2>Hosting</h2><p>The site is hosted on Cloudflare, whose servers may record basic technical information (such as IP address and browser type) to keep the service secure and working.</p>
 <h2>Children</h2><p>Teachers and students of all ages can use the board. We don't knowingly collect personal information from children, and the board page doesn't show ads.</p>
 <h2>Contact</h2><p><a href="mailto:{E(MAIL)}">{E(MAIL)}</a></p><p class="muted">Last updated {E(CFG["launch_date"])}.</p>''')

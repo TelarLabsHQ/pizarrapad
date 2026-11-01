@@ -197,7 +197,7 @@ def pages():
 <h2>Our promises</h2>
 <ul><li>The board stays free, with no sign-up.</li><li>Your boards stay on your device.</li><li>No ads on the board while you teach.</li></ul>
 <h2>Other {E(ST)} tools</h2>
-<p>{E(ST)} also makes <a href="https://quizpolice.pages.dev">QuizPolice</a> for monitored online quizzes, <a href="https://drafttrail-c4t.pages.dev">DraftTrail</a>, a writing-process recorder, and <a href="https://telarclips.pages.dev">Telar Clips</a>, free motion backgrounds for videos.</p>''')
+<p>{E(ST)} also makes <a href="https://quizpolice.pages.dev">QuizPolice</a> for monitored online quizzes, <a href="https://drafttrail-c4t.pages.dev">DraftTrail</a>, a writing-process recorder, and <a href="https://clips.telarlabs.net">Telar Clips</a>, free motion backgrounds for videos.</p>''')
     ads_p = ('<p>Some information pages show ads from Google AdSense. Google and its partners use cookies to show ads based on your visits to this and other websites. You can turn off personalized ads in '
              '<a href="https://adssettings.google.com" rel="noopener">Google Ads Settings</a>, and learn more at <a href="https://policies.google.com/technologies/partner-sites" rel="noopener">How Google uses information from sites that use its services</a>. '
              'Visitors in the EEA, the UK and Switzerland are asked for consent first. The board page itself shows no ads.</p>')

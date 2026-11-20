@@ -74,7 +74,7 @@ def page(path, title, desc, body):
   <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the {E(ST)} teacher tools.</p></div>
   <div class="foot-cols">
     <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/faq/">FAQ</a></div>
-    <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">{E(ST)}</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
+    <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">{E(ST)}</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
   </div>
 </div>{family_row()}<div class="wrap fine">&copy; {date.today().year} {E(ST)}.</div></footer>
 </body>

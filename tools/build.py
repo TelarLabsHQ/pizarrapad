@@ -176,7 +176,30 @@ def pages():
 <p>Open {E(NAME)} in the board's built-in browser and write with its pen or your finger.</p>
 <h2>Tips for the back row</h2>
 <ul><li>Use the <b>Thick</b> pen and <b>Large</b> text.</li><li>On bright projectors, the <b>Blackboard</b> or <b>Greenboard</b> with yellow or white chalk is easiest to read.</li>
-<li>Hide the tool bar for a clean screen while you explain.</li></ul>
+<li>Hide the tool bar for a clean screen while you explain.</li>
+<li>Write in the middle of the page. The edges of a projected image are often cut off or blurry, especially on older projectors.</li>
+<li>Use color with a purpose: one color for the main idea, a second for examples, red only for corrections. Too many colors are harder to read from far away.</li>
+<li>Pale colors like yellow look great on the blackboard but almost disappear on the whiteboard. Switch boards rather than fighting the projector.</li></ul>
+
+<h2>Before the lesson: a 3-minute check</h2>
+<ol><li>Open {E(NAME)} on the device you will teach with, once, while you have internet. After that it keeps working if the Wi-Fi drops.</li>
+<li>Connect to the projector or TV and switch to full screen.</li>
+<li>Walk to the back of the room and look. Write one line with the pen size and color you plan to use.</li>
+<li>Turn off sleep for the lesson: set the screen timeout to 30 minutes or more, and plug the device in.</li>
+<li>Turn off notifications, or use Do Not Disturb, so messages don’t pop up on the big screen.</li></ol>
+
+<h2>Common problems and fixes</h2>
+<table class="tbl"><thead><tr><th>Problem</th><th>Try this</th></tr></thead><tbody>
+<tr><td>The projector shows “No signal”.</td><td>Check that the cable is pushed in firmly at both ends, then choose the right input on the projector (HDMI 1, HDMI 2 or VGA). On Windows, press Windows + P again and choose Duplicate.</td></tr>
+<tr><td>The picture is cut off at the edges.</td><td>Look for <b>Aspect ratio</b> or <b>Zoom</b> in the projector menu and choose 16:9 or Auto. On a laptop, try a lower screen resolution, like 1280 × 720.</td></tr>
+<tr><td>Everything looks tiny.</td><td>Use full screen, the Thick pen and Large text. Zoom in on the board with two fingers or Ctrl and the mouse wheel.</td></tr>
+<tr><td>Casting is slow or lags behind my pen.</td><td>Move closer to the TV or Wi-Fi router, close other apps, or use a cable. Cables never lag.</td></tr>
+<tr><td>My hand draws lines while I write on the tablet.</td><td>Turn on <b>Pen only</b>. Your palm and fingers stop drawing, and fingers scroll and zoom instead.</td></tr>
+<tr><td>The colors look washed out.</td><td>Close the curtains or turn off the lights near the screen, and use the Blackboard or Greenboard.</td></tr></tbody></table>
+
+<h2>After class</h2>
+<p>Your pages are saved on your device automatically. Use <b>Save page as image</b> to keep a copy or to share a page with students who were absent, for example in your class group chat or learning system.</p>
+<p>For lesson ideas, see our guides on <a href="https://telarlabs.net/guides/projector-tv-classroom-whiteboard/">using a projector or TV as a classroom whiteboard</a> and <a href="https://telarlabs.net/guides/whiteboard-activities-projector-classroom/">whiteboard activities for the projector classroom</a>.</p>
 <p class="muted">Coming soon: write on your phone or tablet and have it appear on the projector computer automatically, without cables, plus a library of maps and worksheets.</p>''')
     faq = [('Is PizarraPad really free?', 'Yes. There is no paid plan, no sign-up and no page limit. The information pages show a few ads to cover costs; the board itself never shows ads.'),
            ('Do I need to create an account?', 'No. Open the board and start teaching.'),
@@ -187,17 +210,47 @@ def pages():
            ('Can I install it like an app?', 'Yes. In Chrome or Edge choose "Install app" or "Add to home screen"; on iPad/iPhone use Share → Add to Home Screen.'),
            ('Can I add pictures?', 'Yes. Use the Image tool to add a photo, diagram or worksheet picture, then write on top of it. Pictures are saved on your device with the board.'),
            ('Which languages does the board support?', 'English, Spanish (Español) and Simplified Chinese (中文). Change it under ⋯ → Language.'),
+           ('How do I undo a mistake?', 'Tap Undo, or press Ctrl+Z on a keyboard. Redo brings it back. Even Clear page can be undone.'),
+           ('What is Pen only mode?', 'With Pen only turned on, only a stylus draws. Your palm and fingers scroll and zoom instead, so you can rest your hand on the screen while you write, like on paper.'),
+           ('Which backgrounds are there?', 'Three boards (whiteboard, blackboard and greenboard), each with a plain, lined or grid background. Lines help with handwriting and grids with math, graphs and tables.'),
+           ('How many pages can I make?', 'As many as your lesson needs. Use the arrows to move between pages. Pages are saved on your device until you start a new board.'),
+           ('How do I share a page with students?', 'Use Save page as image, then send the picture in your class chat, email or learning system. Students who were absent can see exactly what was on the board.'),
+           ('How do I start fresh for the next class?', 'Choose Start a new board. It erases all pages on this device, so save any page you need as an image first. To clear just one page, use Clear page.'),
+           ('Can I show it on a projector or TV?', 'Yes. Connect your laptop with a cable, or mirror a tablet or phone to a TV. See Use with a projector for step-by-step setups and fixes for common problems.'),
+           ('Does it work on cheap tablets and older laptops?', 'Usually, yes. It runs in any modern browser (Chrome, Edge, Safari, Samsung Internet or Firefox) and doesn’t need a fast connection after the first visit.'),
            ('Can I use my phone with the projector computer?', 'Not yet. Writing on your phone or tablet while the board shows on the projector computer is coming soon, along with a library of maps and worksheets.')]
     prose('/faq/', 'Frequently Asked Questions', f'Answers to common questions about {NAME}.', '<h1>Frequently asked questions</h1>' + ''.join(f'<h2>{E(q)}</h2><p>{E(a)}</p>' for q, a in faq))
-    prose('/about/', 'About', f'About {NAME} by {ST}.', f'''
+    prose('/about/', 'About', f'About {NAME}, the free online board for teachers, by {ST}.', f"""
 <h1>About {E(NAME)}</h1>
 <p class="lead">{E(NAME)} is a free online board for teachers, made by {E(ST)}, a small independent studio.</p>
 <p>Many classrooms have a projector or TV but no expensive interactive board. Teachers end up using slides that can't be written on, or apps with sign-ups, page limits and watermarks. {E(NAME)} gives every teacher a board they can write on with whatever they have: a laptop and mouse, a tablet and stylus, or a phone.</p>
 <p>The name comes from <i>pizarra</i>, the Spanish word for blackboard.</p>
+
+<h2>Who it’s for</h2>
+<ul><li><b>Teachers with a projector or TV</b> who want to write and draw during the lesson, not just show slides.</li>
+<li><b>Teachers with a tablet and stylus</b> who want to write by hand while the class watches the big screen.</li>
+<li><b>Tutors and online teachers</b> who share their screen in a video call and need a quick board.</li>
+<li><b>Students</b> who want to work out a problem or practice handwriting on lined or grid pages.</li></ul>
+
+<h2>How it’s designed</h2>
+<ul><li><b>Familiar boards.</b> Whiteboard, blackboard and greenboard, with plain, lined or grid backgrounds, so it feels like the board you already know.</li>
+<li><b>Easy to read from the back row.</b> Thick pens, large text, a highlighter and a laser pointer are one tap away.</li>
+<li><b>Made for real hands.</b> Pen-only mode lets you rest your palm on the screen. Pressure works with styluses that support it.</li>
+<li><b>Keeps working when the Wi-Fi drops.</b> After the first visit, the board works offline in the same browser.</li>
+<li><b>Three languages.</b> English, Spanish and Simplified Chinese, chosen automatically from your device.</li></ul>
+
+<h2>Your work stays with you</h2>
+<p>Boards are saved in your browser on your own device, not on our servers. There’s nothing to sign up for and nothing to delete later. To keep a page, save it as an image. Details are in our <a href="/privacy/">privacy policy</a>.</p>
+
 <h2>Our promises</h2>
 <ul><li>The board stays free, with no sign-up.</li><li>Your boards stay on your device.</li><li>No ads on the board while you teach.</li></ul>
+
+<h2>Get started</h2>
+<p><a href="/board/">Open the board</a>, read <a href="/how-to-use/">how to use it</a>, or set it up with <a href="/projector/">a projector or TV</a>.</p>
+
 <h2>Other {E(ST)} tools</h2>
-<p>{E(ST)} also makes <a href="https://quizpolice.telarlabs.net">QuizPolice</a> for monitored online quizzes, <a href="https://drafttrail.telarlabs.net">DraftTrail</a>, a writing-process recorder, <a href="https://clips.telarlabs.net">Telar Clips</a>, free motion backgrounds for videos, and <a href="https://tixward.telarlabs.net">Tixward</a>, event tickets and bookings for school events.</p>''')
+<p>{E(ST)} also makes <a href="https://quizpolice.telarlabs.net">QuizPolice</a> for monitored online quizzes, <a href="https://drafttrail.telarlabs.net">DraftTrail</a>, a writing-process recorder, <a href="https://clips.telarlabs.net">Telar Clips</a>, free motion backgrounds for videos, and <a href="https://tixward.telarlabs.net">Tixward</a>, event tickets and bookings for school events.</p>
+<p>Questions or ideas? <a href="/contact/">Contact us</a>.</p>""")
     ads_p = ('<p>Some information pages show ads from Google AdSense. Google and its partners use cookies to show ads based on your visits to this and other websites. You can turn off personalized ads in '
              '<a href="https://adssettings.google.com" rel="noopener">Google Ads Settings</a>, and learn more at <a href="https://policies.google.com/technologies/partner-sites" rel="noopener">How Google uses information from sites that use its services</a>. '
              'Visitors in the EEA, the UK and Switzerland are asked for consent first. The board page itself shows no ads.</p>')
@@ -234,9 +287,9 @@ def extras():
 if __name__ == '__main__':
     home(); pages(); extras(); print('Built PizarraPad pages')
 
-    # AdSense: no ad code on error or contact pages (screens without publisher content)
+    # AdSense: no ad code on error, contact and legal pages (no publisher content)
     import re as _re
-    for _p in ('404.html', 'contact/index.html'):
+    for _p in ('404.html', 'contact/index.html', 'privacy/index.html', 'terms/index.html'):
         _f = os.path.join(PUB, _p)
         if os.path.exists(_f):
             _s = open(_f).read()

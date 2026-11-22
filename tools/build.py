@@ -63,7 +63,7 @@ def page(path, title, desc, body):
 <body>
 <header class="top"><div class="wrap top-in">
   <span class="tl-wrap"><a class="logo" href="/">{LOGO}<span>{E(NAME)}</span></a><a class="tl-by" href="https://telarlabs.net" title="Telar Labs home"><span>by </span>Telar Labs</a><style>.tl-wrap{{display:flex;align-items:center;min-width:0}}.tl-by{{margin-left:10px;font-size:13px;font-weight:500;line-height:1;color:inherit;opacity:.65;text-decoration:none;white-space:nowrap;flex:none}}.tl-by:hover{{opacity:1;text-decoration:underline}}@media(max-width:560px){{.tl-wrap{{flex-direction:column;align-items:flex-start}}.tl-by{{margin:3px 0 0;font-size:11.5px}}}}</style></span>
-  <nav class="nav"><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/about/">About</a></nav>
+  <nav class="nav"><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/about/">About</a></nav>
   <a class="btn btn-sm" href="/board/">Open the board</a>
 </div></header>
 <main id="main">
@@ -73,7 +73,7 @@ def page(path, title, desc, body):
   <div><a class="logo" href="/">{LOGO}<span>{E(NAME)}</span></a>
   <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the {E(ST)} teacher tools.</p></div>
   <div class="foot-cols">
-    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/faq/">FAQ</a></div>
+    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
     <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">{E(ST)}</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
   </div>
 </div>{family_row()}<div class="wrap fine">&copy; {date.today().year} {E(ST)}.</div></footer>
@@ -124,6 +124,7 @@ def home():
 <div class="feat"><h3>Maps and worksheets library</h3><p>Ready-made maps, graphs and worksheet pages you can drop onto the board and write on.</p></div>
 <div class="feat"><h3>Phone-to-projector sync</h3><p>Write on your phone or tablet anywhere in the room while the board appears on the projector computer. No cables.</p></div></div></section>
 <section class="wrap section"><div class="callout"><h2>Built for real classrooms</h2><p>Big buttons for tablets, readable from the back row, and it keeps working when the internet doesn't. PizarraPad is free because the information pages show a few ads; the board itself never shows ads while you teach.</p><a class="btn" href="/board/">Open the board</a></div></section>'''
+    body += ('<section class="wrap section"><h2>Guides for teachers</h2><ul class="glist" style="list-style:none;padding:0;display:grid;gap:12px">' + ''.join(f'<li style="border:1px solid var(--line);border-radius:12px;padding:14px 16px"><a href="/guides/{g["slug"]}/" style="font-weight:700">{E(g["title"])}</a></li>' for g in GUIDES) + '</ul><p><a href="/guides/">All guides →</a></p></section>')
     body += family_promo('More free tools for teachers')
     page('/', f'{NAME} – Free Online Whiteboard, Blackboard & Greenboard for Teachers',
          'Free online whiteboard, blackboard and greenboard for teachers. Write with a stylus, finger or mouse, or type. Works offline, no sign-up.', body)
@@ -277,15 +278,31 @@ def pages():
 
 def extras():
     open(os.path.join(PUB, 'favicon.svg'), 'w').write(LOGO.replace('class="logo-mark" ', 'xmlns="http://www.w3.org/2000/svg" '))
-    urls = ['/', '/board/', '/how-to-use/', '/projector/', '/faq/', '/about/', '/privacy/', '/terms/', '/contact/']
+    urls = ['/', '/board/', '/how-to-use/', '/projector/', '/faq/', '/guides/'] + [f'/guides/{g["slug"]}/' for g in GUIDES] + ['/about/', '/privacy/', '/terms/', '/contact/']
     open(os.path.join(PUB, 'sitemap.xml'), 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{URL}{u}</loc></url>\n' for u in urls if u != '/board/') + '</urlset>\n')
     open(os.path.join(PUB, 'robots.txt'), 'w').write(f'User-agent: *\nAllow: /\nSitemap: {URL}/sitemap.xml\n')
     if CFG['adsense_client']:
         open(os.path.join(PUB, 'ads.txt'), 'w').write(f'google.com, {CFG["adsense_client"].replace("ca-", "")}, DIRECT, f08c47fec0942fa0\n')
     page('/404.html', 'Page not found', 'Page not found.', '<section class="wrap prose"><h1>Page not found</h1><p><a class="btn" href="/board/">Open the board</a></p></section>')
 
+
+# ---------------------------------------------------------------- help guides (content pages)
+import sys as _sys; _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from guides_content import GUIDES, LEAD as GUIDES_LEAD
+GUIDE_STYLE = ('<style>.glist{list-style:none;padding:0;display:flex;flex-direction:column;gap:14px}.glist li{border:1px solid var(--line);border-radius:12px;padding:14px 16px}'
+               '.glist a{font-weight:700}.glist p{margin:6px 0 0}.gmeta{font-size:14px;margin:0 0 6px}</style>')
+def guides():
+    items = ''.join(f'<li><a href="/guides/{g["slug"]}/">{E(g["title"])}</a><p class="muted">{E(g["desc"])}</p></li>' for g in GUIDES)
+    prose('/guides/', f'{NAME} Guides for Teachers', f'{GUIDES_LEAD}', f'{GUIDE_STYLE}<h1>Guides</h1><p class="lead">{E(GUIDES_LEAD)}</p><ul class="glist">{items}</ul>'
+          f'<p>More guides for teachers and organizers: <a href="https://telarlabs.net/guides/">Telar Labs guides</a>.</p>')
+    for g in GUIDES:
+        more = ''.join(f'<li><a href="/guides/{o["slug"]}/">{E(o["title"])}</a></li>' for o in GUIDES if o is not g)
+        prose(f'/guides/{g["slug"]}/', g['title'], g['desc'],
+              f'{GUIDE_STYLE}<p class="gmeta muted"><a href="/guides/">Guides</a> · Updated {E(g["updated"])}</p><h1>{E(g["title"])}</h1>{g["body"]}'
+              f'<h2>More guides</h2><ul>{more}<li><a href="https://telarlabs.net/guides/">Telar Labs guides for teachers and organizers</a></li></ul>')
+
 if __name__ == '__main__':
-    home(); pages(); extras(); print('Built PizarraPad pages')
+    home(); pages(); guides(); extras(); print('Built PizarraPad pages')
 
     # AdSense: no ad code on error, contact and legal pages (no publisher content)
     import re as _re

@@ -1,3 +1,7 @@
 User-agent: *
+Disallow: /cdn-cgi/
+
+User-agent: Mediapartners-Google
 Allow: /
+
 Sitemap: https://pizarrapad.telarlabs.net/sitemap.xml

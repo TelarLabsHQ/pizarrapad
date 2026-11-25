@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classroom Noise Meter: Free Traffic-Light Sound Level | PizarraPad</title>
+<meta name="description" content="A free classroom noise meter with traffic lights for silent work, partner talk and group work. Uses the microphone only to measure loudness; nothing is recorded.">
+<link rel="canonical" href="https://pizarrapad.telarlabs.net/tools/noise-meter/">
+<meta property="og:title" content="Classroom Noise Meter: Free Traffic-Light Sound Level | PizarraPad"><meta property="og:description" content="A free classroom noise meter with traffic lights for silent work, partner talk and group work. Uses the microphone only to measure loudness; nothing is recorded."><meta property="og:url" content="https://pizarrapad.telarlabs.net/tools/noise-meter/">
+<meta property="og:image" content="https://pizarrapad.telarlabs.net/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#1D7A50">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/site.css?v=b1553e59">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4326677240395780" crossorigin="anonymous"></script>
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+  <span class="tl-wrap"><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a><a class="tl-by" href="https://telarlabs.net" title="Telar Labs home"><span>by </span>Telar Labs</a><style>.tl-wrap{display:flex;align-items:center;min-width:0}.tl-by{margin-left:10px;font-size:13px;font-weight:500;line-height:1;color:inherit;opacity:.65;text-decoration:none;white-space:nowrap;flex:none}.tl-by:hover{opacity:1;text-decoration:underline}@media(max-width:560px){.tl-wrap{flex-direction:column;align-items:flex-start}.tl-by{margin:3px 0 0;font-size:11.5px}}</style></span>
+  <nav class="nav"><a href="/tools/">Classroom tools</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/about/">About</a></nav>
+  <a class="btn btn-sm" href="/board/">Open the board</a>
+</div></header>
+<main id="main">
+<article class="wrap prose"><style>
+.tool{background:var(--board);color:var(--chalk);border-radius:22px;padding:56px 22px 22px;margin:8px 0 34px;position:relative;box-shadow:0 14px 34px rgba(16,32,24,.18)}
+.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:4vh 5vw}
+.tool .tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:12px}
+.tool button,.tool select{font:inherit;font-weight:700;font-size:16px;border-radius:999px;border:2px solid rgba(242,240,228,.35);background:transparent;color:var(--chalk);padding:8px 16px;cursor:pointer;touch-action:manipulation}
+.tool button.on,.tool .go{background:var(--chalk);color:var(--board);border-color:var(--chalk)}
+.tool button:disabled{opacity:.4;cursor:default}
+.tool .fs{position:absolute;top:12px;right:12px;padding:6px 12px;font-size:14px}
+.tool .big{font-family:var(--display);text-align:center;line-height:1.05;margin:8px 0}
+.tool textarea{width:100%;min-height:150px;border-radius:12px;border:2px solid rgba(242,240,228,.3);background:rgba(0,0,0,.18);color:var(--chalk);font:16px/1.5 var(--body);padding:10px}
+.tool .note{font-size:14px;opacity:.75;text-align:center;margin:8px 0 0}
+.tool:fullscreen .ed{display:none}
+.tbar label{display:flex;align-items:center;gap:6px;font-size:15px}
+.ttiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:18px 0}
+.ttiles a{display:block;border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--card);text-decoration:none;color:var(--fg)}
+.ttiles b{display:block;font-size:20px;color:var(--accent);margin-bottom:4px}
+</style><p class="muted" style="font-size:14px;margin:0 0 6px"><a href="/tools/">Classroom tools</a></p><h1>Noise meter</h1><div class="tool" id="nm"><button class="fs" type="button" onclick="const t=this.parentElement;if(document.fullscreenElement)document.exitFullscreen();else if(t.requestFullscreen)t.requestFullscreen();else if(t.webkitRequestFullscreen)t.webkitRequestFullscreen()">⛶ Full screen</button>
+ <div style="display:flex;justify-content:center;gap:18px;margin:8px 0 14px" id="nmLights"><i></i><i></i><i></i></div>
+ <div class="big" id="nmWord" style="font-size:clamp(40px,8vw,96px)">Press Start</div>
+ <div style="height:28px;background:rgba(242,240,228,.15);border-radius:99px;overflow:hidden;max-width:900px;margin:10px auto 16px"><i id="nmBar" style="display:block;height:100%;width:0;background:#6FCF97;transition:width .1s linear"></i></div>
+ <div class="tbar"><button class="go" type="button" id="nmGo">Start</button><label class="ed">Sensitivity <input type="range" id="nmSens" min="1" max="10" value="5"></label>
+  <label class="ed">Level <select id="nmMode"><option value="quiet">Silent work</option><option value="talk" selected>Partner talk</option><option value="group">Group work</option></select></label></div>
+ <p class="note" id="nmNote">Uses your microphone to measure loudness. Nothing is recorded, saved or sent anywhere.</p>
+</div>
+<style>#nmLights i{display:block;width:70px;height:70px;border-radius:50%;background:rgba(242,240,228,.12);transition:background .2s,box-shadow .2s}
+#nm:fullscreen #nmLights i{width:16vh;height:16vh}</style>
+<script>(()=>{let AC=null;function chime(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);const t=AC.currentTime+i*.18;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.9);o.start(t);o.stop(t+1)})}catch(e){}}
+function tick(f){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f||880;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.08,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.08);o.start();o.stop(AC.currentTime+.1)}catch(e){}}
+const store={get:(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const $=i=>document.getElementById(i);let ctx=null,an=null,stream=null,raf=0,sm=0,hold=0;
+$('nmSens').value=store.get('pp-nm-s',5);$('nmMode').value=store.get('pp-nm-m','talk');
+$('nmSens').oninput=()=>store.set('pp-nm-s',$('nmSens').value);$('nmMode').onchange=()=>store.set('pp-nm-m',$('nmMode').value);
+const L=[...document.querySelectorAll('#nmLights i')],C=['#6FCF97','#F2C94C','#EB5757'];
+const W={quiet:['Silent work 🤫','A little noisy','Too loud!'],talk:['Just right 👍','Getting loud','Too loud!'],group:['Great teamwork','Getting loud','Too loud!']};
+const LIM={quiet:[.18,.32],talk:[.38,.58],group:[.5,.72]};
+function set(k){L.forEach((x,i)=>{x.style.background=i===k?C[k]:'rgba(242,240,228,.12)';x.style.boxShadow=i===k?'0 0 40px '+C[k]:'none'});if(k<0){$('nmBar').style.width='0';return}$('nmWord').textContent=W[$('nmMode').value][k];$('nmBar').style.background=C[k]}
+function loop(){const d=new Float32Array(an.fftSize);an.getFloatTimeDomainData(d);let s=0;for(const v of d)s+=v*v;const rms=Math.sqrt(s/d.length);
+ const lvl=Math.min(1,rms*(+$('nmSens').value)*12);sm=sm*.85+lvl*.15;$('nmBar').style.width=(sm*100)+'%';
+ const [a,b]=LIM[$('nmMode').value];let k=sm<a?0:sm<b?1:2;if(k===2)hold=performance.now();else if(performance.now()-hold<1500)k=2;set(k);raf=requestAnimationFrame(loop)}
+$('nmGo').onclick=async()=>{if(stream){cancelAnimationFrame(raf);stream.getTracks().forEach(t=>t.stop());stream=null;set(-1);$('nmGo').textContent='Start';$('nmWord').textContent='Stopped';return}
+ try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();await ctx.resume();
+  an=ctx.createAnalyser();an.fftSize=1024;ctx.createMediaStreamSource(stream).connect(an);$('nmGo').textContent='Stop';loop()}
+ catch(e){$('nmWord').textContent='Microphone blocked';$('nmNote').textContent='Allow microphone access for this site in your browser settings, then press Start again.'}};})();</script><h2>How to use the noise meter</h2>
+<ol><li>Press <b>Start</b> and allow microphone access when your browser asks.</li>
+<li>Choose the level for the activity: <b>Silent work</b>, <b>Partner talk</b> or <b>Group work</b>. Each one allows a different amount of noise.</li>
+<li>Show it on the projector with <b>Full screen</b>. Green means just right, yellow means getting loud, red means too loud.</li>
+<li>If it turns red too easily (or never), adjust the <b>Sensitivity</b> slider. Every room and microphone is different.</li></ol>
+
+<h2>Your privacy</h2>
+<p>The noise meter only measures <b>how loud</b> the room is, many times a second. It doesn’t record, save or send any sound, and it can’t hear words. Press <b>Stop</b> and the microphone turns off. You can check: your browser shows a microphone symbol while it’s on.</p>
+
+<h2>Making a noise meter work in your class</h2>
+<ul><li><b>Agree on the levels together.</b> Before you start, model what “partner talk” and “silent work” sound like, and test the meter with the class.</li>
+<li><b>Stay positive.</b> Point out when the class keeps it green: “Ten minutes in the green, great focus!”</li>
+<li><b>Use a goal, not a punishment.</b> For example, if the class stays out of red for the whole activity, they earn two minutes of free choice at the end.</li>
+<li><b>Expect some yellow.</b> Group work is supposed to be a bit noisy. Red is the only level that needs a reminder.</li>
+<li><b>Calibrate in an empty room.</b> Set the sensitivity so normal classroom background noise stays green.</li></ul>
+
+<h2>Where it helps most</h2>
+<ul><li>Independent reading and silent writing time.</li>
+<li>Group projects and science experiments.</li>
+<li>Indoor lunch or rainy-day breaks.</li>
+<li>Exam rooms and libraries.</li></ul>
+
+<h2>Questions</h2>
+<p><b>Why does it ask for the microphone?</b> To measure loudness. Without it, the meter can’t work. Nothing is recorded.</p>
+<p><b>Which devices work?</b> Most laptops, tablets and phones with a browser like Chrome, Edge, Safari or Firefox. A laptop near the middle of the room gives the best reading.</p>
+<p><b>Is it free?</b> Yes, with no sign-up.</p><h2>More classroom tools</h2><ul><li><a href="/tools/timer/">Classroom timer</a></li><li><a href="/tools/random-name-picker/">Random name picker</a></li><li><a href="/tools/dice/">Classroom dice</a></li><li><a href="/board/">The PizarraPad whiteboard</a></li></ul></article>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+  <div><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a>
+  <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the Telar Labs teacher tools.</p></div>
+  <div class="foot-cols">
+    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/tools/">Classroom tools</a><a href="/tools/timer/">Classroom timer</a><a href="/tools/random-name-picker/">Random name picker</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
+    <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">Telar Labs</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
+  </div>
+</div><div class="wrap family"><span class="family-h"><a href="https://telarlabs.net">More from Telar Labs</a>:</span><a class="app-telarclips" href="https://clips.telarlabs.net" title="Free motion backgrounds and illustrated scenes for class videos, greetings and school programs.">Telar Clips</a><a class="app-quizpolice" href="https://quizpolice.telarlabs.net" title="Free quiz monitor that shows you when students leave an online quiz.">QuizPolice</a><a class="app-drafttrail" href="https://drafttrail.telarlabs.net" title="Free writing recorder that replays how an essay was written, step by step.">DraftTrail</a><a class="app-tixward" href="https://tixward.telarlabs.net" title="Event tickets and free bookings for courts and rooms, paid directly to organizers. Free for most events.">Tixward</a></div><div class="wrap fine">&copy; 2026 Telar Labs.</div></footer>
+</body>
+</html>

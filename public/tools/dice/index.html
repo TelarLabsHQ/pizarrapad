@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Online Dice for the Classroom: Roll 1 to 6 Dice | PizarraPad</title>
+<meta name="description" content="Free online dice for the classroom: roll 1 to 6 big dice on the projector, with totals. Math and review game ideas included. No sign-up.">
+<link rel="canonical" href="https://pizarrapad.telarlabs.net/tools/dice/">
+<meta property="og:title" content="Online Dice for the Classroom: Roll 1 to 6 Dice | PizarraPad"><meta property="og:description" content="Free online dice for the classroom: roll 1 to 6 big dice on the projector, with totals. Math and review game ideas included. No sign-up."><meta property="og:url" content="https://pizarrapad.telarlabs.net/tools/dice/">
+<meta property="og:image" content="https://pizarrapad.telarlabs.net/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#1D7A50">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/site.css?v=b1553e59">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4326677240395780" crossorigin="anonymous"></script>
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+  <span class="tl-wrap"><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a><a class="tl-by" href="https://telarlabs.net" title="Telar Labs home"><span>by </span>Telar Labs</a><style>.tl-wrap{display:flex;align-items:center;min-width:0}.tl-by{margin-left:10px;font-size:13px;font-weight:500;line-height:1;color:inherit;opacity:.65;text-decoration:none;white-space:nowrap;flex:none}.tl-by:hover{opacity:1;text-decoration:underline}@media(max-width:560px){.tl-wrap{flex-direction:column;align-items:flex-start}.tl-by{margin:3px 0 0;font-size:11.5px}}</style></span>
+  <nav class="nav"><a href="/tools/">Classroom tools</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/about/">About</a></nav>
+  <a class="btn btn-sm" href="/board/">Open the board</a>
+</div></header>
+<main id="main">
+<article class="wrap prose"><style>
+.tool{background:var(--board);color:var(--chalk);border-radius:22px;padding:56px 22px 22px;margin:8px 0 34px;position:relative;box-shadow:0 14px 34px rgba(16,32,24,.18)}
+.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:4vh 5vw}
+.tool .tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:12px}
+.tool button,.tool select{font:inherit;font-weight:700;font-size:16px;border-radius:999px;border:2px solid rgba(242,240,228,.35);background:transparent;color:var(--chalk);padding:8px 16px;cursor:pointer;touch-action:manipulation}
+.tool button.on,.tool .go{background:var(--chalk);color:var(--board);border-color:var(--chalk)}
+.tool button:disabled{opacity:.4;cursor:default}
+.tool .fs{position:absolute;top:12px;right:12px;padding:6px 12px;font-size:14px}
+.tool .big{font-family:var(--display);text-align:center;line-height:1.05;margin:8px 0}
+.tool textarea{width:100%;min-height:150px;border-radius:12px;border:2px solid rgba(242,240,228,.3);background:rgba(0,0,0,.18);color:var(--chalk);font:16px/1.5 var(--body);padding:10px}
+.tool .note{font-size:14px;opacity:.75;text-align:center;margin:8px 0 0}
+.tool:fullscreen .ed{display:none}
+.tbar label{display:flex;align-items:center;gap:6px;font-size:15px}
+.ttiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:18px 0}
+.ttiles a{display:block;border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--card);text-decoration:none;color:var(--fg)}
+.ttiles b{display:block;font-size:20px;color:var(--accent);margin-bottom:4px}
+</style><p class="muted" style="font-size:14px;margin:0 0 6px"><a href="/tools/">Classroom tools</a></p><h1>Classroom dice</h1><div class="tool" id="dc"><button class="fs" type="button" onclick="const t=this.parentElement;if(document.fullscreenElement)document.exitFullscreen();else if(t.requestFullscreen)t.requestFullscreen();else if(t.webkitRequestFullscreen)t.webkitRequestFullscreen()">⛶ Full screen</button>
+ <div class="tbar ed"><span>Dice:</span><span id="dcN"></span></div>
+ <div id="dcBox" style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;margin:14px 0;min-height:150px"></div>
+ <div class="big" id="dcSum" style="font-size:clamp(36px,6vw,64px)"></div>
+ <div class="tbar"><button class="go" type="button" id="dcGo">Roll</button></div>
+ <p class="note">Tip: press the space bar to roll.</p>
+</div>
+<script>(()=>{let AC=null;function chime(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);const t=AC.currentTime+i*.18;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.9);o.start(t);o.stop(t+1)})}catch(e){}}
+function tick(f){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f||880;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.08,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.08);o.start();o.stop(AC.currentTime+.1)}catch(e){}}
+const store={get:(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const $=i=>document.getElementById(i);let n=+store.get('pp-dc',2),busy=false;
+const P={1:[[50,50]],2:[[28,28],[72,72]],3:[[25,25],[50,50],[75,75]],4:[[28,28],[72,28],[28,72],[72,72]],5:[[27,27],[73,27],[50,50],[27,73],[73,73]],6:[[28,24],[72,24],[28,50],[72,50],[28,76],[72,76]]};
+const face=v=>'<svg viewBox="0 0 100 100" width="130" height="130" aria-label="'+v+'"><rect x="4" y="4" width="92" height="92" rx="18" fill="#F2F0E4"/>'+P[v].map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="9" fill="#203A2F"/>').join('')+'</svg>';
+for(let k=1;k<=6;k++){const b=document.createElement('button');b.type='button';b.textContent=k;b.onclick=()=>{n=k;store.set('pp-dc',n);show(Array(n).fill(1));mark()};$('dcN').appendChild(b)}
+function mark(){document.querySelectorAll('#dcN button').forEach(b=>b.classList.toggle('on',+b.textContent===n))}
+function show(v){$('dcBox').innerHTML=v.map(face).join('');$('dcSum').textContent=v.length>1?'Total: '+v.reduce((a,b)=>a+b,0):''}
+function roll(){if(busy)return;busy=true;let k=0;const r=()=>Array.from({length:n},()=>1+Math.floor(Math.random()*6));
+ (function step(){show(r());tick(300+k*30);k++;if(k<10)setTimeout(step,50+k*12);else{const v=r();show(v);busy=false;$('dcBox').animate([{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:300})}})()}
+$('dcGo').onclick=roll;document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(document.activeElement.tagName)){e.preventDefault();roll()}});mark();show(Array(n).fill(1))})();</script><h2>How to use the dice</h2>
+<ol><li>Choose how many dice to roll, from 1 to 6.</li>
+<li>Press <b>Roll</b> or the space bar. With two or more dice, the total appears underneath.</li>
+<li>Press <b>Full screen</b> to show the dice big on the projector, so everyone sees the same roll.</li></ol>
+
+<h2>Math games with dice</h2>
+<ul><li><b>Addition race:</b> roll two dice and add. Older students can roll three and add, or multiply two.</li>
+<li><b>Make the biggest number:</b> roll three dice and arrange the digits to make the largest (or smallest) three-digit number.</li>
+<li><b>Race to 100:</b> teams take turns rolling and adding to their total. First to reach 100 exactly wins.</li>
+<li><b>Probability:</b> roll two dice 30 times as a class and tally the totals. Why does 7 come up more often than 2 or 12?</li>
+<li><b>Fractions:</b> roll two dice and make a fraction with the smaller number on top. Compare fractions with a partner.</li></ul>
+
+<h2>Dice for every subject</h2>
+<ul><li><b>Language:</b> number six question words (who, what, where, when, why, how) and roll to choose which one students answer about a story.</li>
+<li><b>Review games:</b> number six topics and roll to choose the next review question.</li>
+<li><b>Writing prompts:</b> roll for a character, a place and a problem from three lists, then write a short story.</li>
+<li><b>Brain breaks:</b> number six exercises (jumping jacks, stretches, balance) and roll to pick the next one.</li></ul>
+
+<h2>Why digital dice in class?</h2>
+<p>Physical dice roll off desks, get lost and are hard for a whole class to see. Big on-screen dice are fair, visible to everyone and always ready. Pair them with the <a href="/board/">PizarraPad board</a> to write down the results or keep score.</p>
+
+<h2>Questions</h2>
+<p><b>Are the rolls really random?</b> Yes. Each die uses the browser’s random number generator, so every face is equally likely.</p>
+<p><b>Is it free?</b> Yes, with no sign-up, and it works offline once the page has loaded.</p><h2>More classroom tools</h2><ul><li><a href="/tools/timer/">Classroom timer</a></li><li><a href="/tools/random-name-picker/">Random name picker</a></li><li><a href="/tools/noise-meter/">Noise meter</a></li><li><a href="/board/">The PizarraPad whiteboard</a></li></ul></article>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+  <div><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a>
+  <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the Telar Labs teacher tools.</p></div>
+  <div class="foot-cols">
+    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/tools/">Classroom tools</a><a href="/tools/timer/">Classroom timer</a><a href="/tools/random-name-picker/">Random name picker</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
+    <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">Telar Labs</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
+  </div>
+</div><div class="wrap family"><span class="family-h"><a href="https://telarlabs.net">More from Telar Labs</a>:</span><a class="app-telarclips" href="https://clips.telarlabs.net" title="Free motion backgrounds and illustrated scenes for class videos, greetings and school programs.">Telar Clips</a><a class="app-quizpolice" href="https://quizpolice.telarlabs.net" title="Free quiz monitor that shows you when students leave an online quiz.">QuizPolice</a><a class="app-drafttrail" href="https://drafttrail.telarlabs.net" title="Free writing recorder that replays how an essay was written, step by step.">DraftTrail</a><a class="app-tixward" href="https://tixward.telarlabs.net" title="Event tickets and free bookings for courts and rooms, paid directly to organizers. Free for most events.">Tixward</a></div><div class="wrap fine">&copy; 2026 Telar Labs.</div></footer>
+</body>
+</html>

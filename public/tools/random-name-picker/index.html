@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Random Name Picker for the Classroom (Free, with Groups) | PizarraPad</title>
+<meta name="description" content="A free random name picker for teachers: paste your class list, pick names fairly without repeats, and make random groups. Full screen for the projector. Private, no sign-up.">
+<link rel="canonical" href="https://pizarrapad.telarlabs.net/tools/random-name-picker/">
+<meta property="og:title" content="Random Name Picker for the Classroom (Free, with Groups) | PizarraPad"><meta property="og:description" content="A free random name picker for teachers: paste your class list, pick names fairly without repeats, and make random groups. Full screen for the projector. Private, no sign-up."><meta property="og:url" content="https://pizarrapad.telarlabs.net/tools/random-name-picker/">
+<meta property="og:image" content="https://pizarrapad.telarlabs.net/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#1D7A50">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/site.css?v=b1553e59">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4326677240395780" crossorigin="anonymous"></script>
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+  <span class="tl-wrap"><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a><a class="tl-by" href="https://telarlabs.net" title="Telar Labs home"><span>by </span>Telar Labs</a><style>.tl-wrap{display:flex;align-items:center;min-width:0}.tl-by{margin-left:10px;font-size:13px;font-weight:500;line-height:1;color:inherit;opacity:.65;text-decoration:none;white-space:nowrap;flex:none}.tl-by:hover{opacity:1;text-decoration:underline}@media(max-width:560px){.tl-wrap{flex-direction:column;align-items:flex-start}.tl-by{margin:3px 0 0;font-size:11.5px}}</style></span>
+  <nav class="nav"><a href="/tools/">Classroom tools</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/about/">About</a></nav>
+  <a class="btn btn-sm" href="/board/">Open the board</a>
+</div></header>
+<main id="main">
+<article class="wrap prose"><style>
+.tool{background:var(--board);color:var(--chalk);border-radius:22px;padding:56px 22px 22px;margin:8px 0 34px;position:relative;box-shadow:0 14px 34px rgba(16,32,24,.18)}
+.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:4vh 5vw}
+.tool .tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:12px}
+.tool button,.tool select{font:inherit;font-weight:700;font-size:16px;border-radius:999px;border:2px solid rgba(242,240,228,.35);background:transparent;color:var(--chalk);padding:8px 16px;cursor:pointer;touch-action:manipulation}
+.tool button.on,.tool .go{background:var(--chalk);color:var(--board);border-color:var(--chalk)}
+.tool button:disabled{opacity:.4;cursor:default}
+.tool .fs{position:absolute;top:12px;right:12px;padding:6px 12px;font-size:14px}
+.tool .big{font-family:var(--display);text-align:center;line-height:1.05;margin:8px 0}
+.tool textarea{width:100%;min-height:150px;border-radius:12px;border:2px solid rgba(242,240,228,.3);background:rgba(0,0,0,.18);color:var(--chalk);font:16px/1.5 var(--body);padding:10px}
+.tool .note{font-size:14px;opacity:.75;text-align:center;margin:8px 0 0}
+.tool:fullscreen .ed{display:none}
+.tbar label{display:flex;align-items:center;gap:6px;font-size:15px}
+.ttiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:18px 0}
+.ttiles a{display:block;border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--card);text-decoration:none;color:var(--fg)}
+.ttiles b{display:block;font-size:20px;color:var(--accent);margin-bottom:4px}
+</style><p class="muted" style="font-size:14px;margin:0 0 6px"><a href="/tools/">Classroom tools</a></p><h1>Random name picker</h1><div class="tool" id="np"><button class="fs" type="button" onclick="const t=this.parentElement;if(document.fullscreenElement)document.exitFullscreen();else if(t.requestFullscreen)t.requestFullscreen();else if(t.webkitRequestFullscreen)t.webkitRequestFullscreen()">⛶ Full screen</button>
+ <div class="big" id="npName" style="font-size:clamp(54px,11vw,140px);min-height:1.3em">Ready?</div>
+ <div class="tbar"><button class="go" type="button" id="npGo">Pick a name</button><label class="ed"><input type="checkbox" id="npRm" checked> Don’t pick the same name twice</label></div>
+ <p class="note" id="npInfo"></p>
+ <div class="ed" style="margin-top:14px">
+  <textarea id="npList" placeholder="Type or paste names, one per line"></textarea>
+  <div class="tbar" style="margin-top:10px"><button type="button" id="npReset">Put all names back</button><button type="button" id="npShuf">Shuffle the list</button>
+   <label>Groups of <select id="npSize"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></label><button type="button" id="npGroups">Make groups</button></div>
+  <div id="npOut" style="margin-top:12px"></div>
+ </div>
+</div>
+<script>(()=>{let AC=null;function chime(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);const t=AC.currentTime+i*.18;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.9);o.start(t);o.stop(t+1)})}catch(e){}}
+function tick(f){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f||880;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.08,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.08);o.start();o.stop(AC.currentTime+.1)}catch(e){}}
+const store={get:(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const $=i=>document.getElementById(i);const SAMPLE='Mia\nNoah\nWei\nAva\nLiam\nSofia\nEthan\nChloe\nLucas\nMei\nOliver\nGrace';
+$('npList').value=store.get('pp-np',SAMPLE);let used=new Set(JSON.parse(store.get('pp-np-used','[]')));let spin=false;
+const names=()=>$('npList').value.split('\n').map(s=>s.trim()).filter(Boolean);
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function info(){const n=names(),left=n.filter(x=>!used.has(x));$('npInfo').textContent=n.length?($('npRm').checked?left.length+' of '+n.length+' names left':n.length+' names'):'Add names below to start.'}
+function save(){store.set('pp-np',$('npList').value);store.set('pp-np-used',JSON.stringify([...used]))}
+$('npList').oninput=()=>{save();info()};$('npRm').onchange=info;
+$('npGo').onclick=()=>{if(spin)return;const n=names();let pool=$('npRm').checked?n.filter(x=>!used.has(x)):n;if(!n.length)return info();
+ if(!pool.length){used.clear();pool=n;$('npInfo').textContent='Everyone has had a turn, so we started again.'}
+ spin=true;const pick=pool[Math.floor(Math.random()*pool.length)];let k=0,steps=16;
+ (function step(){$('npName').textContent=n[Math.floor(Math.random()*n.length)];tick(500+k*20);k++;
+  if(k<steps)setTimeout(step,40+k*k*1.4);else{$('npName').textContent=pick;chime();used.add(pick);save();info();spin=false;$('npName').animate([{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:400})}})()};
+$('npReset').onclick=()=>{used.clear();save();info();$('npName').textContent='Ready?'};
+$('npShuf').onclick=()=>{$('npList').value=sh(names()).join('\n');save()};
+$('npGroups').onclick=()=>{const n=sh(names()),k=+$('npSize').value,g=Math.max(1,Math.round(n.length/k)),G=Array.from({length:g},()=>[]);n.forEach((x,i)=>G[i%g].push(x));
+ $('npOut').innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px">'+G.map((x,i)=>'<div style="border:2px solid rgba(242,240,228,.3);border-radius:12px;padding:10px"><b>Group '+(i+1)+'</b><br>'+x.map(s=>s.replace(/[<&]/g,'')).join('<br>')+'</div>').join('')+'</div>'};
+info()})();</script><h2>How to use the random name picker</h2>
+<ol><li>Type or paste your class list into the box, one name per line. You can copy a column straight from a spreadsheet.</li>
+<li>Press <b>Pick a name</b>. The names spin for a moment and stop on one.</li>
+<li>Leave <b>Don’t pick the same name twice</b> on, and everyone gets a turn before anyone is picked again.</li>
+<li>Press <b>Full screen</b> to show it big on the projector. The list hides so only the name shows.</li></ol>
+<p>Your list is saved on this device, so it’s there next time. Nothing is sent anywhere.</p>
+
+<h2>Make random groups</h2>
+<p>Choose a group size and press <b>Make groups</b>. The picker shuffles your class and splits it into groups as evenly as possible. If the class doesn’t divide exactly, some groups get one extra person. Press it again for a new mix.</p>
+
+<h2>Why teachers pick names at random</h2>
+<ul><li><b>Everyone stays ready.</b> When anyone might be asked, the whole class keeps thinking, not just the students who raise their hands.</li>
+<li><b>It feels fair.</b> Students accept a random pick more easily than a choice that might look like favoritism.</li>
+<li><b>Quieter students get a voice.</b> A random picker gently includes students who rarely volunteer.</li>
+<li><b>It saves time.</b> No more deciding who goes first, who presents, or who hands out the books.</li></ul>
+
+<h2>Tips for kind cold-calling</h2>
+<ul><li><b>Give think time first.</b> Ask the question, wait 10 to 20 seconds (try the <a href="/tools/timer/">timer</a>), then pick a name.</li>
+<li><b>Let students “phone a friend”.</b> If the picked student is stuck, they can ask a classmate and then answer in their own words.</li>
+<li><b>Use pair talk.</b> Let partners discuss first, then pick one person to share their pair’s idea.</li>
+<li><b>Keep the stakes low.</b> Use it for sharing ideas and opinions more than for tricky right-or-wrong answers.</li></ul>
+
+<h2>Other uses</h2>
+<ul><li>Choosing who presents first, who leads a group, or the order of turns.</li>
+<li>Picking a book, a topic, a warm-up activity or a game: just type those instead of names.</li>
+<li>Prize draws and raffles at school events.</li></ul>
+
+<h2>Questions</h2>
+<p><b>Is my class list private?</b> Yes. The names stay in this browser on this device. We never see them.</p>
+<p><b>Can I use it on a phone?</b> Yes. It works on phones, tablets and computers.</p><h2>More classroom tools</h2><ul><li><a href="/tools/timer/">Classroom timer</a></li><li><a href="/tools/dice/">Classroom dice</a></li><li><a href="/tools/noise-meter/">Noise meter</a></li><li><a href="/board/">The PizarraPad whiteboard</a></li></ul></article>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+  <div><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a>
+  <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the Telar Labs teacher tools.</p></div>
+  <div class="foot-cols">
+    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/tools/">Classroom tools</a><a href="/tools/timer/">Classroom timer</a><a href="/tools/random-name-picker/">Random name picker</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
+    <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">Telar Labs</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
+  </div>
+</div><div class="wrap family"><span class="family-h"><a href="https://telarlabs.net">More from Telar Labs</a>:</span><a class="app-telarclips" href="https://clips.telarlabs.net" title="Free motion backgrounds and illustrated scenes for class videos, greetings and school programs.">Telar Clips</a><a class="app-quizpolice" href="https://quizpolice.telarlabs.net" title="Free quiz monitor that shows you when students leave an online quiz.">QuizPolice</a><a class="app-drafttrail" href="https://drafttrail.telarlabs.net" title="Free writing recorder that replays how an essay was written, step by step.">DraftTrail</a><a class="app-tixward" href="https://tixward.telarlabs.net" title="Event tickets and free bookings for courts and rooms, paid directly to organizers. Free for most events.">Tixward</a></div><div class="wrap fine">&copy; 2026 Telar Labs.</div></footer>
+</body>
+</html>

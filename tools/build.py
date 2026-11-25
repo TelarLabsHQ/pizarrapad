@@ -63,7 +63,7 @@ def page(path, title, desc, body):
 <body>
 <header class="top"><div class="wrap top-in">
   <span class="tl-wrap"><a class="logo" href="/">{LOGO}<span>{E(NAME)}</span></a><a class="tl-by" href="https://telarlabs.net" title="Telar Labs home"><span>by </span>Telar Labs</a><style>.tl-wrap{{display:flex;align-items:center;min-width:0}}.tl-by{{margin-left:10px;font-size:13px;font-weight:500;line-height:1;color:inherit;opacity:.65;text-decoration:none;white-space:nowrap;flex:none}}.tl-by:hover{{opacity:1;text-decoration:underline}}@media(max-width:560px){{.tl-wrap{{flex-direction:column;align-items:flex-start}}.tl-by{{margin:3px 0 0;font-size:11.5px}}}}</style></span>
-  <nav class="nav"><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/about/">About</a></nav>
+  <nav class="nav"><a href="/tools/">Classroom tools</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/about/">About</a></nav>
   <a class="btn btn-sm" href="/board/">Open the board</a>
 </div></header>
 <main id="main">
@@ -73,7 +73,7 @@ def page(path, title, desc, body):
   <div><a class="logo" href="/">{LOGO}<span>{E(NAME)}</span></a>
   <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the {E(ST)} teacher tools.</p></div>
   <div class="foot-cols">
-    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
+    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/tools/">Classroom tools</a><a href="/tools/timer/">Classroom timer</a><a href="/tools/random-name-picker/">Random name picker</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
     <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">{E(ST)}</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
   </div>
 </div>{family_row()}<div class="wrap fine">&copy; {date.today().year} {E(ST)}.</div></footer>
@@ -278,7 +278,7 @@ def pages():
 
 def extras():
     open(os.path.join(PUB, 'favicon.svg'), 'w').write(LOGO.replace('class="logo-mark" ', 'xmlns="http://www.w3.org/2000/svg" '))
-    urls = ['/', '/board/', '/how-to-use/', '/projector/', '/faq/', '/guides/'] + [f'/guides/{g["slug"]}/' for g in GUIDES] + ['/about/', '/privacy/', '/terms/', '/contact/']
+    urls = ['/', '/board/', '/how-to-use/', '/projector/', '/faq/', '/guides/'] + [f'/guides/{g["slug"]}/' for g in GUIDES] + ['/tools/'] + [t[0] for t in TOOLS] + ['/about/', '/privacy/', '/terms/', '/contact/']
     open(os.path.join(PUB, 'sitemap.xml'), 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{URL}{u}</loc></url>\n' for u in urls if u != '/board/') + '</urlset>\n')
     open(os.path.join(PUB, 'robots.txt'), 'w').write(f'User-agent: *\nDisallow: /cdn-cgi/\n\nUser-agent: Mediapartners-Google\nAllow: /\n\nSitemap: {URL}/sitemap.xml\n')
     if CFG['adsense_client']:
@@ -301,8 +301,18 @@ def guides():
               f'{GUIDE_STYLE}<p class="gmeta muted"><a href="/guides/">Guides</a> · Updated {E(g["updated"])}</p><h1>{E(g["title"])}</h1>{g["body"]}'
               f'<h2>More guides</h2><ul>{more}<li><a href="https://telarlabs.net/guides/">Telar Labs guides for teachers and organizers</a></li></ul>')
 
+# ---------------------------------------------------------------- classroom tools
+from tools_content import TOOLS, HUB as TOOLS_HUB, CSS as TOOLS_CSS
+def tools():
+    prose('/tools/', 'Free Classroom Tools: Timer, Name Picker, Dice, Noise Meter', 'Free classroom tools for the projector: a countdown timer, random name picker with groups, dice and a noise meter. No sign-up, private, works offline.',
+          f'{TOOLS_CSS}<h1>Classroom tools</h1>{TOOLS_HUB}')
+    for path, title, short, desc, tool, text, _ in TOOLS:
+        more = ''.join(f'<li><a href="{p}">{E(s)}</a></li>' for p, _, s, _, _, _, _ in TOOLS if p != path)
+        prose(path, title, desc, f'{TOOLS_CSS}<p class="muted" style="font-size:14px;margin:0 0 6px"><a href="/tools/">Classroom tools</a></p><h1>{E(short)}</h1>{tool}{text}'
+              f'<h2>More classroom tools</h2><ul>{more}<li><a href="/board/">The PizarraPad whiteboard</a></li></ul>')
+
 if __name__ == '__main__':
-    home(); pages(); guides(); extras(); print('Built PizarraPad pages')
+    home(); pages(); guides(); tools(); extras(); print('Built PizarraPad pages')
 
     # AdSense: no ad code on error, contact and legal pages (no publisher content)
     import re as _re

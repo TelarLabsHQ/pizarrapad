@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classroom Timer: Free Big-Screen Countdown for Teachers | PizarraPad</title>
+<meta name="description" content="A free classroom countdown timer for the projector or TV: 1 to 30 minutes, full screen, color warnings and a gentle chime. No sign-up, works offline.">
+<link rel="canonical" href="https://pizarrapad.telarlabs.net/tools/timer/">
+<meta property="og:title" content="Classroom Timer: Free Big-Screen Countdown for Teachers | PizarraPad"><meta property="og:description" content="A free classroom countdown timer for the projector or TV: 1 to 30 minutes, full screen, color warnings and a gentle chime. No sign-up, works offline."><meta property="og:url" content="https://pizarrapad.telarlabs.net/tools/timer/">
+<meta property="og:image" content="https://pizarrapad.telarlabs.net/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#1D7A50">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/site.css?v=b1553e59">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4326677240395780" crossorigin="anonymous"></script>
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+  <span class="tl-wrap"><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a><a class="tl-by" href="https://telarlabs.net" title="Telar Labs home"><span>by </span>Telar Labs</a><style>.tl-wrap{display:flex;align-items:center;min-width:0}.tl-by{margin-left:10px;font-size:13px;font-weight:500;line-height:1;color:inherit;opacity:.65;text-decoration:none;white-space:nowrap;flex:none}.tl-by:hover{opacity:1;text-decoration:underline}@media(max-width:560px){.tl-wrap{flex-direction:column;align-items:flex-start}.tl-by{margin:3px 0 0;font-size:11.5px}}</style></span>
+  <nav class="nav"><a href="/tools/">Classroom tools</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/about/">About</a></nav>
+  <a class="btn btn-sm" href="/board/">Open the board</a>
+</div></header>
+<main id="main">
+<article class="wrap prose"><style>
+.tool{background:var(--board);color:var(--chalk);border-radius:22px;padding:56px 22px 22px;margin:8px 0 34px;position:relative;box-shadow:0 14px 34px rgba(16,32,24,.18)}
+.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:4vh 5vw}
+.tool .tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:12px}
+.tool button,.tool select{font:inherit;font-weight:700;font-size:16px;border-radius:999px;border:2px solid rgba(242,240,228,.35);background:transparent;color:var(--chalk);padding:8px 16px;cursor:pointer;touch-action:manipulation}
+.tool button.on,.tool .go{background:var(--chalk);color:var(--board);border-color:var(--chalk)}
+.tool button:disabled{opacity:.4;cursor:default}
+.tool .fs{position:absolute;top:12px;right:12px;padding:6px 12px;font-size:14px}
+.tool .big{font-family:var(--display);text-align:center;line-height:1.05;margin:8px 0}
+.tool textarea{width:100%;min-height:150px;border-radius:12px;border:2px solid rgba(242,240,228,.3);background:rgba(0,0,0,.18);color:var(--chalk);font:16px/1.5 var(--body);padding:10px}
+.tool .note{font-size:14px;opacity:.75;text-align:center;margin:8px 0 0}
+.tool:fullscreen .ed{display:none}
+.tbar label{display:flex;align-items:center;gap:6px;font-size:15px}
+.ttiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:18px 0}
+.ttiles a{display:block;border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--card);text-decoration:none;color:var(--fg)}
+.ttiles b{display:block;font-size:20px;color:var(--accent);margin-bottom:4px}
+</style><p class="muted" style="font-size:14px;margin:0 0 6px"><a href="/tools/">Classroom tools</a></p><h1>Classroom timer</h1><div class="tool" id="tm"><button class="fs" type="button" onclick="const t=this.parentElement;if(document.fullscreenElement)document.exitFullscreen();else if(t.requestFullscreen)t.requestFullscreen();else if(t.webkitRequestFullscreen)t.webkitRequestFullscreen()">⛶ Full screen</button>
+ <div class="tbar ed" id="tmP"></div>
+ <div class="tbar ed"><button type="button" id="tmMinus">− 1 min</button><button type="button" id="tmPlus">+ 1 min</button><label><input type="checkbox" id="tmSnd" checked> Sound at the end</label></div>
+ <div class="big" id="tmT" style="font-size:clamp(90px,22vw,260px)">5:00</div>
+ <div style="height:12px;background:rgba(242,240,228,.18);border-radius:99px;overflow:hidden;max-width:900px;margin:0 auto 16px"><i id="tmBar" style="display:block;height:100%;width:100%;background:#F2C94C;transition:width .25s linear"></i></div>
+ <div class="tbar"><button class="go" type="button" id="tmGo">Start</button><button type="button" id="tmReset">Reset</button></div>
+ <p class="note" id="tmMsg">Choose a time, then press Start. Tip: press the space bar to start or pause.</p>
+</div>
+<script>(()=>{let AC=null;function chime(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);const t=AC.currentTime+i*.18;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.9);o.start(t);o.stop(t+1)})}catch(e){}}
+function tick(f){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f||880;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.08,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.08);o.start();o.stop(AC.currentTime+.1)}catch(e){}}
+const store={get:(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const $=i=>document.getElementById(i);let total=+store.get('pp-tm',300),left=total,run=false,end=0,raf=0,last=-1;
+[1,2,3,5,10,15,20,30].forEach(m=>{const b=document.createElement('button');b.type='button';b.textContent=m+' min';b.onclick=()=>set(m*60);$('tmP').appendChild(b)});
+const fmt=s=>{s=Math.max(0,Math.ceil(s));const m=Math.floor(s/60),r=s%60;return m+':'+String(r).padStart(2,'0')};
+function draw(){$('tmT').textContent=fmt(left);$('tmBar').style.width=(total?left/total*100:0)+'%';$('tmBar').style.background=left<=10?'#EB5757':left<=60?'#F2994A':'#F2C94C';
+ document.querySelectorAll('#tmP button').forEach(b=>b.classList.toggle('on',parseInt(b.textContent)*60===total))}
+function set(s){if(run)return;total=Math.max(10,s);left=total;store.set('pp-tm',total);$('tmMsg').textContent='Ready. Press Start.';draw()}
+function loop(){left=(end-performance.now())/1000;const s=Math.ceil(left);if(s!==last&&s<=5&&s>0&&$('tmSnd').checked)tick();last=s;
+ if(left<=0){left=0;run=false;draw();$('tmGo').textContent='Start';$('tmMsg').textContent='⏰ Time’s up!';if($('tmSnd').checked)chime();$('tmT').animate([{opacity:1},{opacity:.2},{opacity:1}],{duration:700,iterations:4});return}
+ draw();raf=requestAnimationFrame(loop)}
+function go(){if(run){run=false;cancelAnimationFrame(raf);$('tmGo').textContent='Resume';$('tmMsg').textContent='Paused.';return}
+ if(left<=0)left=total;run=true;end=performance.now()+left*1000;$('tmGo').textContent='Pause';$('tmMsg').textContent='Running…';loop()}
+$('tmGo').onclick=go;$('tmReset').onclick=()=>{run=false;cancelAnimationFrame(raf);left=total;$('tmGo').textContent='Start';$('tmMsg').textContent='Ready. Press Start.';draw()};
+$('tmPlus').onclick=()=>{if(run){end+=60000}else set(total+60)};$('tmMinus').onclick=()=>{if(run){end=Math.max(performance.now()+1000,end-60000)}else set(total-60)};
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(document.activeElement.tagName)){e.preventDefault();go()}});draw()})();</script><h2>How to use the classroom timer</h2>
+<ol><li>Choose a time: 1, 2, 3, 5, 10, 15, 20 or 30 minutes. Use <b>+ 1 min</b> and <b>− 1 min</b> for anything in between.</li>
+<li>Press <b>Full screen</b> so the whole class can see it on the projector or TV.</li>
+<li>Press <b>Start</b>, or the space bar. The bar turns orange in the last minute and red in the last 10 seconds.</li>
+<li>When time is up, a short chime plays and the numbers flash. Turn the sound off if you prefer a silent timer.</li></ol>
+<p>You can add a minute while the timer is running, which is handy when a group needs “just a little longer”.</p>
+
+<h2>Ways teachers use a visible timer</h2>
+<ul><li><b>Think time:</b> “You have 2 minutes to think on your own before we share.” A timer keeps think time honest and calm.</li>
+<li><b>Group work:</b> 10 or 15 minutes per task, so groups pace themselves and you don’t have to keep announcing the time.</li>
+<li><b>Transitions:</b> 3 minutes to pack up, move desks or clean up. Students know exactly how long they have.</li>
+<li><b>Quizzes and quick writes:</b> a 5-minute warm-up quiz or journal entry at the start of class.</li>
+<li><b>Stations:</b> rotate every 8 or 10 minutes. The chime tells everyone to move.</li>
+<li><b>Breaks:</b> a 5-minute stretch or brain break that ends on time.</li></ul>
+
+<h2>Tips for timers that work</h2>
+<ul><li><b>Say the time out loud and show it.</b> Some students rely on hearing it, others on seeing it.</li>
+<li><b>Give a 1-minute warning.</b> The color change helps, but a quick “one minute left” prepares everyone.</li>
+<li><b>Use slightly less time than you think.</b> Tasks expand to fill the time. You can always add a minute.</li>
+<li><b>Keep it visible.</b> On a projector, full screen works best. On a shared screen, put the timer next to your board.</li></ul>
+
+<h2>Use it with the board</h2>
+<p>Write the task on the <a href="/board/">PizarraPad board</a>, then open the timer in a second tab and switch between them. On a computer, you can place the two windows side by side.</p>
+
+<h2>Questions</h2>
+<p><b>Does it work offline?</b> Yes. Once the page has loaded, the timer keeps running even if the Wi-Fi drops.</p>
+<p><b>Does it keep running if I switch tabs?</b> Yes. The timer uses the clock, so it stays accurate even if the page is in the background.</p>
+<p><b>Is it free?</b> Yes, with no sign-up. Your last chosen time is remembered on this device.</p><h2>More classroom tools</h2><ul><li><a href="/tools/random-name-picker/">Random name picker</a></li><li><a href="/tools/dice/">Classroom dice</a></li><li><a href="/tools/noise-meter/">Noise meter</a></li><li><a href="/board/">The PizarraPad whiteboard</a></li></ul></article>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+  <div><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a>
+  <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the Telar Labs teacher tools.</p></div>
+  <div class="foot-cols">
+    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/tools/">Classroom tools</a><a href="/tools/timer/">Classroom timer</a><a href="/tools/random-name-picker/">Random name picker</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
+    <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">Telar Labs</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
+  </div>
+</div><div class="wrap family"><span class="family-h"><a href="https://telarlabs.net">More from Telar Labs</a>:</span><a class="app-telarclips" href="https://clips.telarlabs.net" title="Free motion backgrounds and illustrated scenes for class videos, greetings and school programs.">Telar Clips</a><a class="app-quizpolice" href="https://quizpolice.telarlabs.net" title="Free quiz monitor that shows you when students leave an online quiz.">QuizPolice</a><a class="app-drafttrail" href="https://drafttrail.telarlabs.net" title="Free writing recorder that replays how an essay was written, step by step.">DraftTrail</a><a class="app-tixward" href="https://tixward.telarlabs.net" title="Event tickets and free bookings for courts and rooms, paid directly to organizers. Free for most events.">Tixward</a></div><div class="wrap fine">&copy; 2026 Telar Labs.</div></footer>
+</body>
+</html>

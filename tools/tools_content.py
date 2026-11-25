@@ -256,10 +256,40 @@ TOOLS = [
 ]
 
 HUB = '''<p class="lead">Free classroom tools for your projector or TV. They open instantly, work offline once loaded, and need no sign-up.</p>
-<div class="ttiles">''' + ''.join(f'<a href="{p}"><b>{s}</b>{blurb}</a>' for p, _, s, _, _, _, blurb in TOOLS) + '''<a href="/board/"><b>Whiteboard</b>Write, draw and teach on a whiteboard, blackboard or greenboard.</a></div>
+<div class="ttiles">''' + ''.join(f'<a href="{p}"><b>{s}</b>{blurb}</a>' for p, _, s, _, _, _, blurb in TOOLS) + '''<a href="/tools/whiteboard-backgrounds/"><b>Board backgrounds</b>Handwriting lines, graph paper, music staff, number line and a 1–100 chart to write on.</a><a href="/board/"><b>Whiteboard</b>Write, draw and teach on a whiteboard, blackboard or greenboard.</a></div>
 <h2>Made for the front of the classroom</h2>
 <p>Every tool has a <b>Full screen</b> button and big, high-contrast text that’s easy to read from the back of the room. They work on a laptop connected to a projector, a smart TV browser, a tablet or a phone.</p>
 <h2>Private by design</h2>
 <p>Your class list, your last timer setting and your dice choice are saved only in this browser. Nothing is sent to us. The noise meter measures loudness only and never records sound.</p>
 <h2>Use them with the board</h2>
 <p>Open the <a href="/board/">PizarraPad board</a> in one tab and a tool in another, and switch between them during the lesson. For more ideas, see our <a href="/guides/">guides for teachers</a>.</p>'''
+
+# ---------------------------------------------------------------- board backgrounds (content page)
+BG = [('lines', 'Handwriting lines', 'Three-line penmanship paper: a solid top line, a dashed middle line and a solid base line. Perfect for modeling letter formation for young learners, and for ESL writing.'),
+      ('grid', 'Graph paper', 'A square grid for math: place value, area and perimeter, bar graphs, coordinates and drawing shapes neatly.'),
+      ('dots', 'Dot paper', 'A dot grid for geometry and patterns: draw polygons, symmetry and arrays, or bullet-journal style lists.'),
+      ('staff', 'Music staff', 'Rows of five-line staves for music lessons: notes, rhythms, scales and simple melodies.'),
+      ('numline', 'Number line', 'Number lines with a tick for every whole number and a longer tick every five. Zoom out to see negative numbers. Great for addition, subtraction, rounding and integers.'),
+      ('hundred', '1–100 chart', 'A hundreds chart from 1 to 100 for counting, skip counting, number patterns, multiples and even and odd numbers.')]
+BG_PAGE = ('/tools/whiteboard-backgrounds/', 'Whiteboard Backgrounds: Handwriting Lines, Graph Paper, Music Staff and More',
+ 'Free whiteboard backgrounds for the classroom projector: handwriting lines, graph paper, dot paper, music staff, number line and a 1–100 chart. Write on top, save as PDF.',
+ '<p class="lead">PizarraPad has six ready-made backgrounds to write on, all free. Choose one from the <b>⋯</b> menu on the board, under <b>Background</b>. They work on the whiteboard, blackboard and greenboard.</p>'
+ + ''.join(f'<h2>{n}</h2><img src="/assets/bg/{k}.webp" alt="{n} background on the PizarraPad board" width="720" height="405" loading="lazy" style="border-radius:14px;border:1px solid var(--line);height:auto"><p>{d}</p>' for k, n, d in BG)
+ + '''<h2>How to use a background</h2>
+<ol><li><a href="/board/">Open the board</a> and tap the <b>⋯</b> menu at the top right.</li>
+<li>Under <b>Background</b>, choose Lines, Grid, Dots, Music staff, Number line or 1–100 chart.</li>
+<li>Write on top with a pen, your finger or the mouse. The background stays in place while you write, and your choice is saved with the board.</li>
+<li>Each page can be used for a different activity: add a page with <b>+</b> and pick another background whenever you like.</li></ol>
+
+<h2>Save the lesson as a PDF</h2>
+<p>When you’re done, open the <b>⋯</b> menu and choose <b>Save all pages as PDF</b>. Every page of your board, with its background and your writing, goes into one PDF file you can share with students, post in your class group chat or upload to Google Classroom. Use <b>Save page as image</b> for just the current page.</p>
+<p>The PDF is made on your device. Nothing is uploaded, and it works even without internet.</p>
+
+<h2>Teaching ideas</h2>
+<ul><li><b>Handwriting lines:</b> model a letter big on the projector, then have students copy it on paper with the same three lines.</li>
+<li><b>Graph paper:</b> draw a bar graph from a quick class survey, such as favorite fruit or how students got to school.</li>
+<li><b>Dot paper:</b> ask students to find every square they can make by joining four dots.</li>
+<li><b>Music staff:</b> write a rhythm and clap it together, then change one note and clap again.</li>
+<li><b>Number line:</b> show jumps for addition and subtraction with arrows, or place fractions between 0 and 1.</li>
+<li><b>1–100 chart:</b> highlight every multiple of 3 with the highlighter and ask what pattern appears.</li></ul>
+<p>Pair the board with our <a href="/tools/timer/">classroom timer</a> and <a href="/tools/random-name-picker/">random name picker</a> for a complete lesson.</p>''')

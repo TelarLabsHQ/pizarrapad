@@ -87,13 +87,13 @@ def prose(path, title, desc, inner):
     page(path, title, desc, f'<article class="wrap prose">{inner}</article>')
 
 FEATURES = [
-    ('Three boards', 'Switch between a clean whiteboard, a classic charcoal blackboard and a green chalkboard, with lined or grid backgrounds for handwriting and math.'),
+    ('Three boards', 'Switch between a clean whiteboard, a classic charcoal blackboard and a green chalkboard, with backgrounds for handwriting, math and music: lines, graph paper, dots, music staff, a number line and a 1–100 chart.'),
     ('Any pen, finger or mouse', 'Works with a Samsung S Pen, Apple Pencil, Surface Pen and other styluses (with pressure), your finger, a mouse, or the keyboard.'),
     ('Pen-only mode', 'Turn it on and your palm and fingers stop drawing. Fingers scroll and zoom instead, so you can rest your hand on the screen.'),
     ('Type when you prefer', 'Tap with the Text tool and type. Change the size, color or bold, and drag text to move it.'),
     ('Shapes, highlighter, laser', 'Straight lines, arrows, boxes and circles; a see-through highlighter; and a laser pointer that fades away.'),
     ('Add pictures', 'Insert a photo, diagram or worksheet picture, or snap one with your phone camera. Move and resize it, then write on top.'),
-    ('Pages and saving', 'Add as many pages as your lesson needs. Everything saves on your device automatically, and you can save any page as an image.'),
+    ('Pages and saving', 'Add as many pages as your lesson needs. Everything saves on your device automatically. Save any page as an image, or the whole lesson as a PDF.'),
     ('Works offline', 'Once opened, the board keeps working even when the school Wi-Fi drops.'),
     ('English, Español, 中文', 'The board speaks English, Spanish and Simplified Chinese, and picks your device language automatically.'),
     ('Free, no account', 'No sign-up, no limits on pages, no watermark. Open it and teach.'),
@@ -278,7 +278,7 @@ def pages():
 
 def extras():
     open(os.path.join(PUB, 'favicon.svg'), 'w').write(LOGO.replace('class="logo-mark" ', 'xmlns="http://www.w3.org/2000/svg" '))
-    urls = ['/', '/board/', '/how-to-use/', '/projector/', '/faq/', '/guides/'] + [f'/guides/{g["slug"]}/' for g in GUIDES] + ['/tools/'] + [t[0] for t in TOOLS] + ['/about/', '/privacy/', '/terms/', '/contact/']
+    urls = ['/', '/board/', '/how-to-use/', '/projector/', '/faq/', '/guides/'] + [f'/guides/{g["slug"]}/' for g in GUIDES] + ['/tools/', '/tools/whiteboard-backgrounds/'] + [t[0] for t in TOOLS] + ['/about/', '/privacy/', '/terms/', '/contact/']
     open(os.path.join(PUB, 'sitemap.xml'), 'w').write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join(f'<url><loc>{URL}{u}</loc></url>\n' for u in urls if u != '/board/') + '</urlset>\n')
     open(os.path.join(PUB, 'robots.txt'), 'w').write(f'User-agent: *\nDisallow: /cdn-cgi/\n\nUser-agent: Mediapartners-Google\nAllow: /\n\nSitemap: {URL}/sitemap.xml\n')
     if CFG['adsense_client']:
@@ -302,7 +302,7 @@ def guides():
               f'<h2>More guides</h2><ul>{more}<li><a href="https://telarlabs.net/guides/">Telar Labs guides for teachers and organizers</a></li></ul>')
 
 # ---------------------------------------------------------------- classroom tools
-from tools_content import TOOLS, HUB as TOOLS_HUB, CSS as TOOLS_CSS
+from tools_content import TOOLS, HUB as TOOLS_HUB, CSS as TOOLS_CSS, BG_PAGE
 def tools():
     prose('/tools/', 'Free Classroom Tools: Timer, Name Picker, Dice, Noise Meter', 'Free classroom tools for the projector: a countdown timer, random name picker with groups, dice and a noise meter. No sign-up, private, works offline.',
           f'{TOOLS_CSS}<h1>Classroom tools</h1>{TOOLS_HUB}')
@@ -310,6 +310,7 @@ def tools():
         more = ''.join(f'<li><a href="{p}">{E(s)}</a></li>' for p, _, s, _, _, _, _ in TOOLS if p != path)
         prose(path, title, desc, f'{TOOLS_CSS}<p class="muted" style="font-size:14px;margin:0 0 6px"><a href="/tools/">Classroom tools</a></p><h1>{E(short)}</h1>{tool}{text}'
               f'<h2>More classroom tools</h2><ul>{more}<li><a href="/board/">The PizarraPad whiteboard</a></li></ul>')
+    prose(BG_PAGE[0], BG_PAGE[1], BG_PAGE[2], f'<p class="muted" style="font-size:14px;margin:0 0 6px"><a href="/tools/">Classroom tools</a></p><h1>Whiteboard backgrounds</h1>{BG_PAGE[3]}')
 
 if __name__ == '__main__':
     home(); pages(); guides(); tools(); extras(); print('Built PizarraPad pages')

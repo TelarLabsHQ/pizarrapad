@@ -91,7 +91,8 @@ svg.i{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke
 
 /* menu sheet */
 #menu{position:fixed;right:max(16px, env(safe-area-inset-right,0px));top:calc(70px + env(safe-area-inset-top,0px));z-index:7;width:min(320px, calc(100vw - 32px));padding:14px;display:flex;flex-direction:column;gap:14px}
-.seg{display:flex;background:var(--chrome-2);border-radius:12px;padding:3px;gap:3px}
+.seg{display:flex;flex-wrap:wrap;background:var(--chrome-2);border-radius:12px;padding:3px;gap:3px}
+#segTpl button{flex:1 1 30%;min-width:72px}
 .seg button{flex:1;height:40px;border-radius:9px;font-weight:700;font-size:14px}
 .seg button[aria-pressed="true"]{background:var(--chrome);box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .mlbl{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
@@ -168,12 +169,13 @@ body{margin:0}
   <div><div class="mlbl" data-i="boardStyle">Board</div>
     <div class="seg" id="segBoard"><button data-v="white" data-i="whiteboard">Whiteboard</button><button data-v="black" data-i="blackboard">Blackboard</button><button data-v="green" data-i="greenboard">Greenboard</button></div></div>
   <div><div class="mlbl" data-i="background">Background</div>
-    <div class="seg" id="segTpl"><button data-v="plain" data-i="plain">Plain</button><button data-v="lines" data-i="lines">Lines</button><button data-v="grid" data-i="grid">Grid</button></div></div>
+    <div class="seg" id="segTpl"><button data-v="plain" data-i="plain">Plain</button><button data-v="lines" data-i="lines">Lines</button><button data-v="grid" data-i="grid">Grid</button><button data-v="dots" data-i="dots">Dots</button><button data-v="staff" data-i="staff">Music staff</button><button data-v="numline" data-i="numline">Number line</button><button data-v="hundred" data-i="hundred">1–100 chart</button></div></div>
   <div><div class="mlbl" data-i="language">Language</div>
     <div class="seg" id="segLang"><button data-v="en" lang="en">English</button><button data-v="es" lang="es">Español</button><button data-v="zh" lang="zh-Hans">中文</button></div></div>
   <div class="mlist">
     <button class="mbtn" id="fsBtn"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg><span data-i="fullscreen">Full screen</span></button>
     <button class="mbtn" id="saveImg"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 20h14"/></svg><span data-i="saveImg">Save page as image</span></button>
+    <button class="mbtn" id="savePdf"><svg class="i" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h6M9 17h6"/></svg><span data-i="savePdf">Save all pages as PDF</span></button>
     <a class="mbtn" href="/guides/" target="_blank" rel="noopener" style="text-decoration:none;color:inherit"><svg class="i" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg><span data-i="ideas">Teaching ideas and guides</span></a>
     <button class="mbtn danger" id="clearBtn"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg><span data-i="clear">Clear page</span></button>
     <button class="mbtn danger" id="newBoardBtn"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="13" rx="1.5"/><path d="M12 9v5M9.5 11.5h5"/></svg><span data-i="newBoard">Start a new board</span></button>
@@ -195,12 +197,12 @@ body{margin:0}
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const L={
  en:{img:'Image',imgHint:'Tap an image to select it: drag to move, drag the corner to resize, × to remove. Tap empty space to add another.',imgAdded:'Image added. Drag to move; drag the corner dot to resize.',imgErr:'Sorry, that image could not be added.',imgDel:'Image removed',pen:'Pen',hl:'Highlight',eraser:'Eraser',text:'Text',shape:'Shape',laser:'Laser',style:'Color',undo:'Undo',redo:'Redo',hide:'Hide',tools:'Tools',
-  penOnly:'Pen only',boardStyle:'Board',whiteboard:'Whiteboard',blackboard:'Blackboard',greenboard:'Greenboard',saveImg:'Save page as image',ideas:'Teaching ideas and guides',newBoard:'Start a new board',newQ:'Start a new board?',newNote:'All pages on this device will be erased. Save any page you need first.',newYes:'Start new',saved:'Image saved',background:'Background',plain:'Plain',lines:'Lines',grid:'Grid',
+  penOnly:'Pen only',boardStyle:'Board',whiteboard:'Whiteboard',blackboard:'Blackboard',greenboard:'Greenboard',saveImg:'Save page as image',ideas:'Teaching ideas and guides',newBoard:'Start a new board',newQ:'Start a new board?',newNote:'All pages on this device will be erased. Save any page you need first.',newYes:'Start new',saved:'Image saved',background:'Background',plain:'Plain',lines:'Lines',grid:'Grid',dots:'Dots',staff:'Music staff',numline:'Number line',hundred:'1–100 chart',savePdf:'Save all pages as PDF',pdfMaking:'Making the PDF…',
   language:'Language',fullscreen:'Full screen',clear:'Clear page',clearQ:'Clear everything on this page?',clearNote:'You can bring it back with Undo.',
   cancel:'Cancel',clearYes:'Clear page',page:'Page',of:'of',colors:'Color',size:'Thickness',shapes:'Shape',tsize:'Text size',bold:'Bold',
   thin:'Thin',med:'Medium',thick:'Thick',small:'S',medium:'M',large:'L',penOn:'Pen only: fingers scroll and zoom',penOff:'Fingers can draw',newp:'New page added',noFs:'Full screen is not available here',pageFmt:'Page {n} of {m}',soonT:'Coming soon:',soonD:'a library of maps and worksheets, and writing on your phone or tablet while it shows on the projector.'},
- es:{img:'Imagen',imgHint:'Toca una imagen para seleccionarla: arrástrala para moverla, arrastra la esquina para cambiar su tamaño y toca × para quitarla. Toca un espacio vacío para agregar otra.',imgAdded:'Imagen agregada. Arrástrala para moverla; arrastra el punto de la esquina para cambiar su tamaño.',imgErr:'No se pudo agregar esa imagen.',imgDel:'Imagen eliminada',pen:'Lápiz',hl:'Resaltador',eraser:'Borrador',text:'Texto',shape:'Forma',laser:'Láser',style:'Color',undo:'Deshacer',redo:'Rehacer',hide:'Ocultar',tools:'Herramientas',penOnly:'Solo lápiz',boardStyle:'Pizarra',whiteboard:'Blanca',blackboard:'Negra',greenboard:'Verde',saveImg:'Guardar página como imagen',ideas:'Ideas y guías para enseñar',newBoard:'Empezar una pizarra nueva',newQ:'¿Empezar una pizarra nueva?',newNote:'Se borrarán todas las páginas de este dispositivo. Guarda primero las páginas que necesites.',newYes:'Empezar',saved:'Imagen guardada',background:'Fondo',plain:'Liso',lines:'Líneas',grid:'Cuadrícula',language:'Idioma',fullscreen:'Pantalla completa',clear:'Borrar página',clearQ:'¿Borrar todo en esta página?',clearNote:'Puedes recuperarlo con Deshacer.',cancel:'Cancelar',clearYes:'Borrar página',page:'Página',of:'de',colors:'Color',size:'Grosor',shapes:'Forma',tsize:'Tamaño del texto',bold:'Negrita',thin:'Fino',med:'Medio',thick:'Grueso',small:'P',medium:'M',large:'G',penOn:'Solo lápiz: los dedos desplazan y hacen zoom',penOff:'Los dedos pueden dibujar',newp:'Página nueva agregada',noFs:'La pantalla completa no está disponible aquí',pageFmt:'Página {n} de {m}',soonT:'Próximamente:',soonD:'una biblioteca de mapas y hojas de trabajo, y escribir en tu teléfono o tableta mientras se ve en el proyector.'},
- zh:{img:'图片',imgHint:'点击图片即可选中：拖动可移动，拖动角上的圆点可调整大小，点 × 可删除。点击空白处可再添加一张。',imgAdded:'已添加图片。拖动可移动，拖动角上的圆点可调整大小。',imgErr:'抱歉，无法添加这张图片。',imgDel:'已删除图片',pen:'笔',hl:'荧光笔',eraser:'橡皮擦',text:'文字',shape:'形状',laser:'激光笔',style:'颜色',undo:'撤销',redo:'重做',hide:'隐藏',tools:'工具',penOnly:'仅限触控笔',boardStyle:'板面',whiteboard:'白板',blackboard:'黑板',greenboard:'绿板',saveImg:'将本页保存为图片',ideas:'教学点子和指南',newBoard:'新建板面',newQ:'要新建板面吗？',newNote:'此设备上的所有页面都将被清除。请先保存需要的页面。',newYes:'新建',saved:'图片已保存',background:'背景',plain:'空白',lines:'横线',grid:'方格',language:'语言',fullscreen:'全屏',clear:'清空本页',clearQ:'要清空本页的所有内容吗？',clearNote:'可以用“撤销”恢复。',cancel:'取消',clearYes:'清空本页',page:'第',of:'/',colors:'颜色',size:'粗细',shapes:'形状',tsize:'字号',bold:'加粗',thin:'细',med:'中',thick:'粗',small:'小',medium:'中',large:'大',penOn:'仅限触控笔：手指用于滚动和缩放',penOff:'手指也可以书写',newp:'已添加新页面',noFs:'此处无法使用全屏',pageFmt:'第 {n} 页 / 共 {m} 页',soonT:'即将推出：',soonD:'地图和练习纸素材库，以及在手机或平板上书写并同步显示在投影上。'}
+ es:{img:'Imagen',imgHint:'Toca una imagen para seleccionarla: arrástrala para moverla, arrastra la esquina para cambiar su tamaño y toca × para quitarla. Toca un espacio vacío para agregar otra.',imgAdded:'Imagen agregada. Arrástrala para moverla; arrastra el punto de la esquina para cambiar su tamaño.',imgErr:'No se pudo agregar esa imagen.',imgDel:'Imagen eliminada',pen:'Lápiz',hl:'Resaltador',eraser:'Borrador',text:'Texto',shape:'Forma',laser:'Láser',style:'Color',undo:'Deshacer',redo:'Rehacer',hide:'Ocultar',tools:'Herramientas',penOnly:'Solo lápiz',boardStyle:'Pizarra',whiteboard:'Blanca',blackboard:'Negra',greenboard:'Verde',saveImg:'Guardar página como imagen',ideas:'Ideas y guías para enseñar',newBoard:'Empezar una pizarra nueva',newQ:'¿Empezar una pizarra nueva?',newNote:'Se borrarán todas las páginas de este dispositivo. Guarda primero las páginas que necesites.',newYes:'Empezar',saved:'Imagen guardada',background:'Fondo',plain:'Liso',lines:'Líneas',grid:'Cuadrícula',dots:'Puntos',staff:'Pentagrama',numline:'Recta numérica',hundred:'Tabla del 1 al 100',savePdf:'Guardar todas las páginas en PDF',pdfMaking:'Creando el PDF…',language:'Idioma',fullscreen:'Pantalla completa',clear:'Borrar página',clearQ:'¿Borrar todo en esta página?',clearNote:'Puedes recuperarlo con Deshacer.',cancel:'Cancelar',clearYes:'Borrar página',page:'Página',of:'de',colors:'Color',size:'Grosor',shapes:'Forma',tsize:'Tamaño del texto',bold:'Negrita',thin:'Fino',med:'Medio',thick:'Grueso',small:'P',medium:'M',large:'G',penOn:'Solo lápiz: los dedos desplazan y hacen zoom',penOff:'Los dedos pueden dibujar',newp:'Página nueva agregada',noFs:'La pantalla completa no está disponible aquí',pageFmt:'Página {n} de {m}',soonT:'Próximamente:',soonD:'una biblioteca de mapas y hojas de trabajo, y escribir en tu teléfono o tableta mientras se ve en el proyector.'},
+ zh:{img:'图片',imgHint:'点击图片即可选中：拖动可移动，拖动角上的圆点可调整大小，点 × 可删除。点击空白处可再添加一张。',imgAdded:'已添加图片。拖动可移动，拖动角上的圆点可调整大小。',imgErr:'抱歉，无法添加这张图片。',imgDel:'已删除图片',pen:'笔',hl:'荧光笔',eraser:'橡皮擦',text:'文字',shape:'形状',laser:'激光笔',style:'颜色',undo:'撤销',redo:'重做',hide:'隐藏',tools:'工具',penOnly:'仅限触控笔',boardStyle:'板面',whiteboard:'白板',blackboard:'黑板',greenboard:'绿板',saveImg:'将本页保存为图片',ideas:'教学点子和指南',newBoard:'新建板面',newQ:'要新建板面吗？',newNote:'此设备上的所有页面都将被清除。请先保存需要的页面。',newYes:'新建',saved:'图片已保存',background:'背景',plain:'空白',lines:'横线',grid:'方格',dots:'点阵',staff:'五线谱',numline:'数轴',hundred:'百数表',savePdf:'将所有页面保存为 PDF',pdfMaking:'正在生成 PDF…',language:'语言',fullscreen:'全屏',clear:'清空本页',clearQ:'要清空本页的所有内容吗？',clearNote:'可以用“撤销”恢复。',cancel:'取消',clearYes:'清空本页',page:'第',of:'/',colors:'颜色',size:'粗细',shapes:'形状',tsize:'字号',bold:'加粗',thin:'细',med:'中',thick:'粗',small:'小',medium:'中',large:'大',penOn:'仅限触控笔：手指用于滚动和缩放',penOff:'手指也可以书写',newp:'已添加新页面',noFs:'此处无法使用全屏',pageFmt:'第 {n} 页 / 共 {m} 页',soonT:'即将推出：',soonD:'地图和练习纸素材库，以及在手机或平板上书写并同步显示在投影上。'}
 };
 const PAL={
  white:{bg:'#FBFCFA',tpl:'rgba(40,90,140,.18)',tplMid:'rgba(200,60,60,.30)',c:{ink:'#1B1F24',red:'#D7263D',blue:'#1F5FBF',green:'#1E8A4C',yellow:'#D69A00',orange:'#E36414'}},
@@ -258,6 +260,19 @@ function drawBase(){
 function drawTemplate(c){
   if(S.tpl==='plain') return; const P=PAL[S.board];
   const [x0,y0]=s2w(0,0), [x1,y1]=s2w(W,Hh); c.lineWidth=1.2/v.s; c.setLineDash([]);
+  if(S.tpl==='dots'){const g=40; c.fillStyle=P.tpl.replace(/[\d.]+\)$/,'.5)');
+    for(let x=Math.floor(x0/g)*g;x<=x1;x+=g) for(let y=Math.floor(y0/g)*g;y<=y1;y+=g){c.beginPath(); c.arc(x,y,2.6/Math.max(v.s,.5),0,6.283); c.fill()} return}
+  if(S.tpl==='staff'){const gap=18, step=200; c.strokeStyle=P.tpl.replace(/[\d.]+\)$/,'.45)'); c.lineWidth=1.6/v.s;
+    for(let y=Math.floor((y0-gap*4)/step)*step+60;y<=y1;y+=step){c.beginPath(); for(let k=0;k<5;k++){c.moveTo(x0,y+k*gap); c.lineTo(x1,y+k*gap)} c.stroke()} return}
+  if(S.tpl==='numline'){const u=70, step=260; c.strokeStyle=P.tplMid.replace(/[\d.]+\)$/,'.55)'); c.fillStyle=c.strokeStyle; c.lineWidth=2/v.s;
+    c.font=`${20}px system-ui,sans-serif`; c.textAlign='center'; c.textBaseline='top';
+    for(let y=Math.floor(y0/step)*step+130;y<=y1;y+=step){ c.beginPath(); c.moveTo(x0,y); c.lineTo(x1,y);
+      for(let x=Math.floor(x0/u)*u;x<=x1;x+=u){const n=Math.round(x/u); c.moveTo(x,y-(n%5?10:16)); c.lineTo(x,y+(n%5?10:16))} c.stroke();
+      for(let x=Math.floor(x0/u)*u;x<=x1;x+=u) c.fillText(String(Math.round(x/u)),x,y+22) } return}
+  if(S.tpl==='hundred'){const cs=58, ox=30, oy=24; c.strokeStyle=P.tpl; c.lineWidth=1.4/v.s; c.beginPath();
+    for(let i=0;i<=10;i++){c.moveTo(ox+i*cs,oy); c.lineTo(ox+i*cs,oy+10*cs); c.moveTo(ox,oy+i*cs); c.lineTo(ox+10*cs,oy+i*cs)} c.stroke();
+    c.fillStyle=P.c.ink; c.globalAlpha=.42; c.font='22px system-ui,sans-serif'; c.textAlign='center'; c.textBaseline='middle';
+    for(let n=1;n<=100;n++){const r=Math.floor((n-1)/10), k=(n-1)%10; c.fillText(String(n),ox+k*cs+cs/2,oy+r*cs+cs/2)} c.globalAlpha=1; return}
   if(S.tpl==='grid'){const g=40; c.strokeStyle=P.tpl; c.beginPath();
     for(let x=Math.floor(x0/g)*g;x<=x1;x+=g){c.moveTo(x,y0);c.lineTo(x,y1)}
     for(let y=Math.floor(y0/g)*g;y<=y1;y+=g){c.moveTo(x0,y);c.lineTo(x1,y)} c.stroke(); return}
@@ -571,6 +586,26 @@ let confirmMode='clear';
 function ask(mode){confirmMode=mode; $('#cTitle').textContent=t(mode==='new'?'newQ':'clearQ'); $('#scrim p').textContent=t(mode==='new'?'newNote':'clearNote'); $('#cYes').textContent=t(mode==='new'?'newYes':'clearYes'); closePopovers(); $('#scrim').hidden=false; $('#cNo').focus()}
 $('#clearBtn').addEventListener('click',()=>ask('clear'));
 $('#newBoardBtn').addEventListener('click',()=>ask('new'));
+async function makePdf(){
+  closePopovers(); commitEditor(); toast(t('pdfMaking'));
+  const keep=S.page, shots=[];
+  for(let i=0;i<S.pages.length;i++){ S.page=i; drawBase(); await new Promise(r=>setTimeout(r,180)); drawBase();
+    const d=base.toDataURL('image/jpeg',.9); shots.push({b:Uint8Array.from(atob(d.split(',')[1]),ch=>ch.charCodeAt(0)),w:base.width,h:base.height}) }
+  S.page=keep; requestBase();
+  const enc=new TextEncoder(), parts=[], offs=[]; let len=0; const put=x=>{const u=typeof x==='string'?enc.encode(x):x; parts.push(u); len+=u.length};
+  const n=shots.length, obj=(id,body)=>{offs[id]=len; put(`${id} 0 obj\n`); body(); put('\nendobj\n')};
+  put('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+  obj(1,()=>put('<< /Type /Catalog /Pages 2 0 R >>'));
+  obj(2,()=>put(`<< /Type /Pages /Count ${n} /Kids [${shots.map((_,i)=>`${3+i*3} 0 R`).join(' ')}] >>`));
+  shots.forEach((sh,i)=>{const pg=3+i*3, im=pg+1, ct=pg+2, W=Math.round(sh.w*.5), H=Math.round(sh.h*.5);
+    obj(pg,()=>put(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /XObject << /I${i} ${im} 0 R >> >> /Contents ${ct} 0 R >>`));
+    obj(im,()=>{put(`<< /Type /XObject /Subtype /Image /Width ${sh.w} /Height ${sh.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${sh.b.length} >>\nstream\n`); put(sh.b); put('\nendstream')});
+    const cs=`q ${W} 0 0 ${H} 0 0 cm /I${i} Do Q`; obj(ct,()=>put(`<< /Length ${cs.length} >>\nstream\n${cs}\nendstream`)) });
+  const xref=len, total=3+n*3; put(`xref\n0 ${total}\n0000000000 65535 f \n`); for(let i=1;i<total;i++) put(String(offs[i]).padStart(10,'0')+' 00000 n \n');
+  put(`trailer\n<< /Size ${total} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(parts,{type:'application/pdf'})); a.download='pizarrapad-lesson.pdf'; document.body.append(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),5000); toast(t('saved'));
+}
+$('#savePdf').addEventListener('click',makePdf);
 $('#saveImg').addEventListener('click',()=>{closePopovers(); commitEditor(); drawBase(); base.toBlob(b=>{if(!b) return; const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=`pizarrapad-page-${S.page+1}.png`; document.body.append(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),3000); toast(t('saved'))},'image/png')});
 $('#cNo').addEventListener('click',()=>{$('#scrim').hidden=true});
 $('#cYes').addEventListener('click',()=>{$('#scrim').hidden=true; commitEditor(); if(confirmMode==='new'){S.pages=[{objs:[]}]; S.page=0; hist.clear(); selImg=null; setTimeout(gcImages,500); v={s:1,x:0,y:0}; updatePage(); changed(); return} selImg=null; requestLive(); if(objs().length){pushHistory(); S.pages[S.page].objs=[]; changed()}});

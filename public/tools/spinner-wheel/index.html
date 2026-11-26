@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><!--home-domain--><script>(function(){
+var M={"quizpolice.pages.dev":"quizpolice.telarlabs.net","tixward.pages.dev":"tixward.telarlabs.net","drafttrail.pages.dev":"drafttrail.telarlabs.net","drafttrail-c4t.pages.dev":"drafttrail.telarlabs.net","pizarrapad.pages.dev":"pizarrapad.telarlabs.net","telarclips.pages.dev":"clips.telarlabs.net","telar-clips.pages.dev":"clips.telarlabs.net","telarlabs-home.pages.dev":"telarlabs.net","telar-stories.pages.dev":"stories.telarlabs.net"};
+var K=/^(pizarrapad|quizpolice|qp-|tixward|telar-tixward|drafttrail)/,KNOWN=["pizarrapad-images","drafttrail"],to=M[location.hostname];
+function lsKeys(){var o={};try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(K.test(k))o[k]=localStorage.getItem(k)}}catch(e){}return o}
+function dbNames(){if(!window.indexedDB)return Promise.resolve([]);if(indexedDB.databases)return indexedDB.databases().then(function(d){return d.map(function(x){return x.name}).filter(function(n){return K.test(n||"")})},function(){return []});return Promise.resolve([])}
+function dump(name){return new Promise(function(res){var rq=indexedDB.open(name);rq.onerror=function(){res(null)};rq.onsuccess=function(){var db=rq.result,N=[].slice.call(db.objectStoreNames),out=[];if(!N.length){db.close();return res(null)}
+ var tx=db.transaction(N,"readonly");N.forEach(function(n){var os=tx.objectStore(n),s={name:n,keyPath:os.keyPath,autoIncrement:os.autoIncrement,indexes:[].slice.call(os.indexNames).map(function(i){var x=os.index(i);return {name:i,keyPath:x.keyPath,unique:x.unique,multiEntry:x.multiEntry}}),items:[]};out.push(s);
+  var c=os.openCursor();c.onsuccess=function(){var r=c.result;if(r){s.items.push([r.primaryKey,r.value]);r.continue()}}});
+ tx.oncomplete=function(){db.close();res(out.some(function(s){return s.items.length})?{name:name,version:db.version,stores:out}:null)};tx.onerror=function(){res(null)}}})}
+function restore(d){return new Promise(function(res){var mk=function(db){d.stores.forEach(function(s){if(!db.objectStoreNames.contains(s.name)){var os=db.createObjectStore(s.name,s.keyPath==null?{autoIncrement:s.autoIncrement}:{keyPath:s.keyPath,autoIncrement:s.autoIncrement});s.indexes.forEach(function(x){os.createIndex(x.name,x.keyPath,{unique:x.unique,multiEntry:x.multiEntry})})}})};
+ var put=function(db){var N=d.stores.map(function(s){return s.name}).filter(function(n){return db.objectStoreNames.contains(n)});if(!N.length){db.close();return res()}var tx=db.transaction(N,"readwrite");
+  d.stores.forEach(function(s){if(N.indexOf(s.name)<0)return;var os=tx.objectStore(s.name);s.items.forEach(function(it){if(os.keyPath==null)os.put(it[1],it[0]);else os.put(it[1])})});tx.oncomplete=tx.onerror=function(){db.close();res()}};
+ var rq=indexedDB.open(d.name,d.version);rq.onupgradeneeded=function(){mk(rq.result)};rq.onsuccess=function(){put(rq.result)};
+ rq.onerror=function(e){e.preventDefault&&e.preventDefault();var r2=indexedDB.open(d.name);r2.onsuccess=function(){put(r2.result)};r2.onerror=function(){res()}}})}
+// ---- on the new address: receive work moved from an old address
+if(!to){if(/[?&]telar-move=1/.test(location.search)&&window.opener){var OK=Object.keys(M).map(function(h){return location.protocol+"//"+h});
+  addEventListener("message",function(e){if(OK.indexOf(e.origin)<0||!e.data||e.data.t!=="telar-move-data")return;var ls=e.data.ls||{},clash=Object.keys(ls).filter(function(k){var v=null;try{v=localStorage.getItem(k)}catch(x){}return v!==null&&v!==ls[k]});
+   var all=!clash.length||confirm("This new address already has some saved work. Replace it with the work from the old address?\n\nOK = use the old address’s work. Cancel = keep both where possible.");
+   try{Object.keys(ls).forEach(function(k){if(all||localStorage.getItem(k)===null)localStorage.setItem(k,ls[k])})}catch(x){}
+   Promise.all((e.data.idb||[]).map(restore)).then(function(){try{e.source.postMessage({t:"telar-move-done"},e.origin)}catch(x){}location.replace(e.data.path||"/")})});
+  window.opener.postMessage({t:"telar-move-ready"},"*")}return}
+// ---- on an old address
+var url=location.protocol+"//"+to+location.pathname+location.search+location.hash,go=function(){location.replace(url)};
+try{if(localStorage.getItem("telar-moved")){go();return}}catch(e){}
+var ls=lsKeys();dbNames().then(function(names){if(!Object.keys(ls).length&&!names.length){go();return}
+ var show=function(){try{if(sessionStorage.getItem("telar-stay"))return}catch(e){}
+  var b=document.createElement("div");b.setAttribute("role","dialog");b.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483646;max-width:560px;margin:0 auto;background:#fff;color:#14181f;border:1px solid #d9dde5;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.25);padding:16px 18px;font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif";
+  b.innerHTML='<b style="font-size:17px">We have a new address: '+to+'</b><p style="margin:6px 0 12px">Your saved work is on this old address. Move it to the new one, so it’s there next time.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button data-a="mv" style="background:#1d6b4f;color:#fff;border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer">Move my work and go there</button><button data-a="go" style="background:#fff;border:1px solid #c8ccd4;border-radius:10px;padding:10px 14px;font:inherit;cursor:pointer">Go without it</button><button data-a="no" style="background:none;border:0;padding:10px 6px;font:inherit;color:#5b6474;cursor:pointer;text-decoration:underline">Not now</button></div><p data-m style="margin:10px 0 0;color:#5b6474;display:none"></p>';
+  document.body.appendChild(b);var msg=function(t){var p=b.querySelector("[data-m]");p.style.display="block";p.textContent=t};
+  b.querySelector('[data-a="no"]').onclick=function(){try{sessionStorage.setItem("telar-stay","1")}catch(e){}b.remove()};
+  b.querySelector('[data-a="go"]').onclick=go;
+  b.querySelector('[data-a="mv"]').onclick=function(){var w=window.open(location.protocol+"//"+to+"/?telar-move=1");if(!w){msg("Your browser blocked the new tab. Allow pop-ups for this site, then try again.");return}msg("Moving your work…");
+   addEventListener("message",function(e){if(e.origin!==location.protocol+"//"+to||!e.data)return;
+    if(e.data.t==="telar-move-ready")Promise.all(names.map(dump)).then(function(idb){w.postMessage({t:"telar-move-data",ls:lsKeys(),idb:idb.filter(Boolean),path:location.pathname+location.search+location.hash},location.protocol+"//"+to)});
+    if(e.data.t==="telar-move-done"){try{localStorage.setItem("telar-moved","1")}catch(x){}msg("✓ Moved. Your work is now at "+to+".");setTimeout(go,1500)}})}};
+ if(document.body)show();else addEventListener("DOMContentLoaded",show)})})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spinner Wheel: Free Random Name and Prize Wheel for the Classroom | PizarraPad</title>
+<meta name="description" content="A free spinner wheel for the classroom: type names, prizes or topics and spin. Ticking sound, remove the winner, full screen for the projector. Fair and random, no sign-up.">
+<link rel="canonical" href="https://pizarrapad.telarlabs.net/tools/spinner-wheel/">
+<meta property="og:title" content="Spinner Wheel: Free Random Name and Prize Wheel for the Classroom | PizarraPad"><meta property="og:description" content="A free spinner wheel for the classroom: type names, prizes or topics and spin. Ticking sound, remove the winner, full screen for the projector. Fair and random, no sign-up."><meta property="og:url" content="https://pizarrapad.telarlabs.net/tools/spinner-wheel/">
+<meta property="og:image" content="https://pizarrapad.telarlabs.net/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#1D7A50">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/site.css?v=1ca76dd9">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4326677240395780" crossorigin="anonymous"></script>
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+  <span class="tl-wrap"><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a><a class="tl-by" href="https://telarlabs.net" title="Telar Labs home"><span>by </span>Telar Labs</a><style>.tl-wrap{display:flex;align-items:center;min-width:0}.tl-by{margin-left:10px;font-size:13px;font-weight:500;line-height:1;color:inherit;opacity:.65;text-decoration:none;white-space:nowrap;flex:none}.tl-by:hover{opacity:1;text-decoration:underline}@media(max-width:560px){.tl-wrap{flex-direction:column;align-items:flex-start}.tl-by{margin:3px 0 0;font-size:11.5px}}</style></span>
+  <nav class="nav"><a href="/tools/">Classroom tools</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/about/">About</a></nav>
+  <a class="btn btn-sm" href="/board/">Open the board</a>
+</div></header>
+<main id="main">
+<article class="wrap prose"><style>
+.tool{background:var(--board);color:var(--chalk);border-radius:22px;padding:56px 22px 22px;margin:8px 0 34px;position:relative;box-shadow:0 14px 34px rgba(16,32,24,.18)}
+.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:4vh 5vw}
+.tool .tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:12px}
+.tool button,.tool select{font:inherit;font-weight:700;font-size:16px;border-radius:999px;border:2px solid rgba(242,240,228,.35);background:transparent;color:var(--chalk);padding:8px 16px;cursor:pointer;touch-action:manipulation}
+.tool button.on,.tool .go{background:var(--chalk);color:var(--board);border-color:var(--chalk)}
+.tool button:disabled{opacity:.4;cursor:default}
+.tool .fs{position:absolute;top:12px;right:12px;padding:6px 12px;font-size:14px}
+.tool .big{font-family:var(--display);text-align:center;line-height:1.05;margin:8px 0}
+.tool textarea{width:100%;min-height:150px;border-radius:12px;border:2px solid rgba(242,240,228,.3);background:rgba(0,0,0,.18);color:var(--chalk);font:16px/1.5 var(--body);padding:10px}
+.tool .note{font-size:14px;opacity:.75;text-align:center;margin:8px 0 0}
+.tool:fullscreen .ed{display:none}
+.tbar label{display:flex;align-items:center;gap:6px;font-size:15px}
+.ttiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:18px 0}
+.ttiles a{display:block;border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--card);text-decoration:none;color:var(--fg)}
+.ttiles b{display:block;font-size:20px;color:var(--accent);margin-bottom:4px}
+</style><p class="muted" style="font-size:14px;margin:0 0 6px"><a href="/tools/">Classroom tools</a></p><h1>Spinner wheel</h1><div class="tool" id="wh"><button class="fs" type="button" onclick="const t=this.parentElement;if(document.fullscreenElement)document.exitFullscreen();else if(t.requestFullscreen)t.requestFullscreen();else if(t.webkitRequestFullscreen)t.webkitRequestFullscreen()">⛶ Full screen</button>
+ <div class="wh-stage"><canvas id="whC" width="900" height="900" aria-label="Spinner wheel"></canvas><div class="wh-ptr" aria-hidden="true"></div><button type="button" class="wh-hub" id="whHub" aria-label="Spin the wheel">SPIN</button></div>
+ <div class="big" id="whOut" style="font-size:clamp(36px,7vw,90px);min-height:1.2em" aria-live="polite"></div>
+ <div class="tbar"><button class="go" type="button" id="whGo">Spin</button><label class="ed"><input type="checkbox" id="whRm"> Remove the winner after each spin</label></div>
+ <div class="ed" style="margin-top:12px">
+  <textarea id="whList" placeholder="Type names, prizes or topics, one per line"></textarea>
+  <div class="tbar" style="margin-top:10px"><button type="button" id="whShuf">Shuffle</button><button type="button" id="whBack">Put removed items back</button><label>Colors <select id="whPal"><option value="bright">Bright</option><option value="pastel">Pastel</option><option value="chalk">Chalk</option></select></label></div>
+  <p class="note" id="whInfo"></p>
+ </div>
+</div>
+<style>
+.tool [hidden]{display:none!important}
+.wh-stage{position:relative;width:min(560px,100%);margin:0 auto}#wh:fullscreen .wh-stage{width:min(78vh,90vw)}
+.wh-stage canvas{width:100%;height:auto;display:block;filter:drop-shadow(0 10px 18px rgba(0,0,0,.35))}
+.wh-ptr{position:absolute;top:50%;right:-6px;width:0;height:0;border-top:22px solid transparent;border-bottom:22px solid transparent;border-right:46px solid #F2C94C;transform:translateY(-50%);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+.tool .wh-hub{position:absolute;left:50%;top:50%;width:19%;height:19%;transform:translate(-50%,-50%);border-radius:50%;background:var(--chalk);color:var(--board);border:4px solid var(--board);font-weight:800;font-size:clamp(13px,2.4vw,20px);padding:0}
+</style>
+<script>(()=>{let AC=null;function chime(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);const t=AC.currentTime+i*.18;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.9);o.start(t);o.stop(t+1)})}catch(e){}}
+function tick(f){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f||880;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.08,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.08);o.start();o.stop(AC.currentTime+.1)}catch(e){}}
+const store={get:(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+const $=i=>document.getElementById(i),cv=$('whC'),ctx=cv.getContext('2d');
+const PAL={bright:['#E4572E','#F2C94C','#2D9CDB','#27AE60','#9B51E0','#F2994A','#EB5757','#56CCF2','#6FCF97','#BB6BD9'],pastel:['#F8B4B4','#FDE68A','#A7F3D0','#BFDBFE','#DDD6FE','#FBCFE8','#FED7AA','#C7F9CC','#E9D5FF','#BAE6FD'],chalk:['#F2F0E4','#C9D6C3','#F2F0E4','#B7C9C1','#F2F0E4','#D8CDB3']};
+const SAMPLE='Mia\nNoah\nWei\nAva\nLiam\nSofia\nEthan\nChloe\nLucas\nMei';
+$('whList').value=store.get('pp-wh',SAMPLE);$('whPal').value=store.get('pp-wh-pal','bright');$('whRm').checked=store.get('pp-wh-rm','')==='1';
+let removed=JSON.parse(store.get('pp-wh-out','[]')),ang=0,spin=false,pend=null;
+const all=()=>$('whList').value.split('\n').map(s=>s.trim()).filter(Boolean);
+const items=()=>{const r=removed.slice();return all().filter(x=>{const k=r.indexOf(x);if(k>=0){r.splice(k,1);return false}return true})};
+function lum(h){const c=parseInt(h.slice(1),16);return (.299*(c>>16&255)+.587*(c>>8&255)+.114*(c&255))/255}
+function draw(){const L=items(),n=L.length,W=cv.width,R=W/2-10,cx=W/2,cy=W/2,pal=PAL[$('whPal').value];ctx.clearRect(0,0,W,W);
+ if(!n){ctx.fillStyle='rgba(242,240,228,.15)';ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fill();ctx.fillStyle='#F2F0E4';ctx.font='700 40px sans-serif';ctx.textAlign='center';ctx.fillText('Add some names',cx,cy-100);return}
+ const a=2*Math.PI/n;for(let k=0;k<n;k++){const s=ang+k*a,col=pal[(n%pal.length===1&&k===n-1)?(k+1)%pal.length:k%pal.length];
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,R,s,s+a);ctx.closePath();ctx.fillStyle=col;ctx.fill();ctx.strokeStyle='rgba(32,58,47,.55)';ctx.lineWidth=3;ctx.stroke();
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(s+a/2);ctx.fillStyle=lum(col)>.6?'#203A2F':'#fff';ctx.textAlign='right';ctx.textBaseline='middle';
+  let fs=Math.min(58,Math.max(16,R*a*.55));ctx.font='800 '+fs+'px sans-serif';let t=L[k];while(ctx.measureText(t).width>R*.68&&fs>14){fs-=2;ctx.font='800 '+fs+'px sans-serif'}
+  if(ctx.measureText(t).width>R*.7){while(t.length>3&&ctx.measureText(t+'…').width>R*.7)t=t.slice(0,-1);t+='…'}ctx.fillText(t,R-22,0);ctx.restore()}
+ ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.lineWidth=10;ctx.strokeStyle='#F2F0E4';ctx.stroke()}
+function info(){const n=all().length,l=items().length;$('whInfo').textContent=n?(removed.length?l+' of '+n+' left on the wheel':n+' on the wheel'):'Add names, prizes or topics, one per line.';$('whBack').disabled=!removed.length}
+function save(){store.set('pp-wh',$('whList').value);store.set('pp-wh-out',JSON.stringify(removed));store.set('pp-wh-pal',$('whPal').value);store.set('pp-wh-rm',$('whRm').checked?'1':'')}
+function go(){if(spin)return;if(pend!==null){removed.push(pend);pend=null;save();draw();info()}const L=items(),n=L.length;if(spin||!n)return;if(n===1){$('whOut').textContent=L[0];return}spin=true;$('whOut').textContent='';
+ const a=2*Math.PI/n,pick=crypto.getRandomValues(new Uint32Array(1))[0]%n,jit=(Math.random()*.7+.15)*a;
+ const turns=6+Math.floor(Math.random()*3),from=ang;let to=-(pick*a+jit);while(to>from)to-=2*Math.PI;to-=2*Math.PI*turns;
+ const dist=from-to,dur=5200,t0=performance.now();let lastSeg=-1;
+ (function f(t){let p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,4);ang=from-dist*e;draw();
+  const seg=Math.floor(((-ang)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)/a);if(seg!==lastSeg){lastSeg=seg;tick(1000-p*500)}
+  if(p<1)requestAnimationFrame(f);else{spin=false;const w=L[pick];$('whOut').textContent='🎉 '+w;chime();$('whOut').animate([{transform:'scale(1.2)'},{transform:'scale(1)'}],{duration:450});
+   if($('whRm').checked){pend=w;const l=items().length-1;$('whInfo').textContent=w+' comes off the wheel on the next spin · '+l+' left'}}})(t0)}
+$('whGo').onclick=go;$('whHub').onclick=go;
+$('whList').oninput=()=>{removed=removed.filter(x=>all().includes(x));save();draw();info()};$('whPal').onchange=()=>{save();draw()};$('whRm').onchange=save;
+$('whShuf').onclick=()=>{const a=all();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}$('whList').value=a.join('\n');save();draw()};
+$('whBack').onclick=()=>{removed=[];pend=null;save();draw();info();$('whOut').textContent=''};
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(e.target.tagName)){e.preventDefault();go()}});
+draw();info()})();</script><h2>How to use the spinner wheel</h2>
+<ol><li><b>Type the choices</b> under the wheel, one per line: names, prizes, topics, questions or groups. Up to about 100 fit.</li>
+<li><b>Press Spin</b>, tap the middle of the wheel, or press the space bar. The wheel slows down with a ticking sound and lands on a random choice.</li>
+<li>Tick <b>Remove the winner after each spin</b> so nobody is picked twice. <b>Put removed items back</b> starts over.</li>
+<li>Use <b>Full screen</b> on the projector, and pick <b>Bright</b>, <b>Pastel</b> or <b>Chalk</b> colors.</li></ol>
+<h2>Ideas for the wheel</h2>
+<ul><li><b>Who answers next:</b> your class list, with “remove the winner” on, so everyone gets a turn.</li>
+<li><b>Review games:</b> spin for the topic (“Fractions”, “Decimals”, “Word problems”) or for points (“1 point”, “2 points”, “Double!”, “Lose a turn”).</li>
+<li><b>Prizes and raffles</b> at a class party or a school event.</li>
+<li><b>Writing prompts</b> and <b>debate topics</b>.</li>
+<li><b>Brain breaks:</b> “10 jumping jacks”, “Dance for 30 seconds”, “Stretch”, “Tell a joke”.</li>
+<li><b>Jobs and roles:</b> who leads the group, who writes, who presents.</li></ul>
+<h2>Is it fair?</h2>
+<p>Yes. The winner is chosen with your browser’s secure random numbers before the wheel starts turning, so every choice has the same chance, and the spin itself is just for show. To give an item more chances, type it on more than one line.</p>
+<h2>Questions</h2>
+<h3>Is my list saved?</h3><p>Yes, in this browser only, so it’s ready next time. Nothing is sent to us.</p>
+<h3>Want a race instead?</h3><p>Try the <a href="/tools/animal-race/">animal race</a>: each student gets a cute animal, and the winner crosses the finish line first.</p><h2>More classroom tools</h2><ul><li><a href="/tools/timer/">Classroom timer</a></li><li><a href="/tools/random-name-picker/">Random name picker</a></li><li><a href="/tools/dice/">Classroom dice</a></li><li><a href="/tools/noise-meter/">Noise meter</a></li><li><a href="/tools/pomodoro-timer/">Pomodoro timer</a></li><li><a href="/tools/animal-race/">Animal race</a></li><li><a href="/tools/icebreaker-cards/">Icebreaker cards</a></li><li><a href="/board/">The PizarraPad whiteboard</a></li></ul></article>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+  <div><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a>
+  <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the Telar Labs teacher tools.</p></div>
+  <div class="foot-cols">
+    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/tools/">Classroom tools</a><a href="/tools/timer/">Classroom timer</a><a href="/tools/random-name-picker/">Random name picker</a><a href="/tools/spinner-wheel/">Spinner wheel</a><a href="/tools/pomodoro-timer/">Pomodoro timer</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
+    <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">Telar Labs</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
+  </div>
+</div><div class="wrap family"><span class="family-h"><a href="https://telarlabs.net">More from Telar Labs</a>:</span><a class="app-telarclips" href="https://clips.telarlabs.net" title="Free motion backgrounds and illustrated scenes for class videos, greetings and school programs.">Telar Clips</a><a class="app-quizpolice" href="https://quizpolice.telarlabs.net" title="Free quiz monitor that shows you when students leave an online quiz.">QuizPolice</a><a class="app-drafttrail" href="https://drafttrail.telarlabs.net" title="Free writing recorder that replays how an essay was written, step by step.">DraftTrail</a><a class="app-tixward" href="https://tixward.telarlabs.net" title="Event tickets and free bookings for courts and rooms, paid directly to organizers. Free for most events.">Tixward</a></div><div class="wrap fine">&copy; 2026 Telar Labs.</div></footer>
+</body>
+</html>

@@ -73,7 +73,7 @@ def page(path, title, desc, body):
   <div><a class="logo" href="/">{LOGO}<span>{E(NAME)}</span></a>
   <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the {E(ST)} teacher tools.</p></div>
   <div class="foot-cols">
-    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/tools/">Classroom tools</a><a href="/tools/timer/">Classroom timer</a><a href="/tools/random-name-picker/">Random name picker</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
+    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/tools/">Classroom tools</a><a href="/tools/timer/">Classroom timer</a><a href="/tools/random-name-picker/">Random name picker</a><a href="/tools/spinner-wheel/">Spinner wheel</a><a href="/tools/pomodoro-timer/">Pomodoro timer</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
     <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">{E(ST)}</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
   </div>
 </div>{family_row()}<div class="wrap fine">&copy; {date.today().year} {E(ST)}.</div></footer>
@@ -118,7 +118,11 @@ def home():
 <a class="feat" href="/tools/timer/" style="text-decoration:none;color:inherit"><h3>⏱ Classroom timer</h3><p>A big countdown for the projector, with color warnings and a gentle chime.</p></a>
 <a class="feat" href="/tools/random-name-picker/" style="text-decoration:none;color:inherit"><h3>🎯 Random name picker</h3><p>Pick a student fairly, or make random groups.</p></a>
 <a class="feat" href="/tools/dice/" style="text-decoration:none;color:inherit"><h3>🎲 Dice</h3><p>Roll up to six dice on the big screen for games and math.</p></a>
-<a class="feat" href="/tools/noise-meter/" style="text-decoration:none;color:inherit"><h3>🔊 Noise meter</h3><p>Shows how loud the room is, so the class can keep it down.</p></a></div>
+<a class="feat" href="/tools/noise-meter/" style="text-decoration:none;color:inherit"><h3>🔊 Noise meter</h3><p>Shows how loud the room is, so the class can keep it down.</p></a>
+<a class="feat" href="/tools/pomodoro-timer/" style="text-decoration:none;color:inherit"><h3>🍅 Pomodoro timer</h3><p>Focus and break intervals, or your own steps and stations.</p></a>
+<a class="feat" href="/tools/spinner-wheel/" style="text-decoration:none;color:inherit"><h3>🎡 Spinner wheel</h3><p>Spin a wheel of names, prizes or topics.</p></a>
+<a class="feat" href="/tools/animal-race/" style="text-decoration:none;color:inherit"><h3>🐢 Animal race</h3><p>Cute animals race to the finish to pick a winner.</p></a>
+<a class="feat" href="/tools/icebreaker-cards/" style="text-decoration:none;color:inherit"><h3>💬 Icebreaker cards</h3><p>Would you rather, this or that, quick draw and more.</p></a></div>
 <p><a href="/tools/">All classroom tools →</a></p></section>
 <section class="wrap section"><h2>Everything you need at the front of the class</h2><div class="feats">{feats}</div></section>
 {ad("home")}
@@ -309,8 +313,11 @@ def guides():
 
 # ---------------------------------------------------------------- classroom tools
 from tools_content import TOOLS, HUB as TOOLS_HUB, CSS as TOOLS_CSS, BG_PAGE
+from tools_more import TOOLS_MORE
+TOOLS = TOOLS + TOOLS_MORE
+TOOLS_HUB = TOOLS_HUB.replace('<a href="/tools/whiteboard-backgrounds/">', ''.join(f'<a href="{t[0]}"><b>{t[2]}</b>{t[6]}</a>' for t in TOOLS_MORE) + '<a href="/tools/whiteboard-backgrounds/">', 1)
 def tools():
-    prose('/tools/', 'Free Classroom Tools: Timer, Name Picker, Dice, Noise Meter', 'Free classroom tools for the projector: a countdown timer, random name picker with groups, dice and a noise meter. No sign-up, private, works offline.',
+    prose('/tools/', 'Free Classroom Tools: Timer, Pomodoro, Spinner Wheel, Name Picker, Icebreakers', 'Free classroom tools for the projector: a countdown timer, Pomodoro timer, spinner wheel, animal race, random name picker with groups, icebreaker cards, dice and a noise meter. No sign-up, private, works offline.',
           f'{TOOLS_CSS}<h1>Classroom tools</h1>{TOOLS_HUB}')
     for path, title, short, desc, tool, text, _ in TOOLS:
         more = ''.join(f'<li><a href="{p}">{E(s)}</a></li>' for p, _, s, _, _, _, _ in TOOLS if p != path)

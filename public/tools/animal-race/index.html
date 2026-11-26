@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><!--home-domain--><script>(function(){
+var M={"quizpolice.pages.dev":"quizpolice.telarlabs.net","tixward.pages.dev":"tixward.telarlabs.net","drafttrail.pages.dev":"drafttrail.telarlabs.net","drafttrail-c4t.pages.dev":"drafttrail.telarlabs.net","pizarrapad.pages.dev":"pizarrapad.telarlabs.net","telarclips.pages.dev":"clips.telarlabs.net","telar-clips.pages.dev":"clips.telarlabs.net","telarlabs-home.pages.dev":"telarlabs.net","telar-stories.pages.dev":"stories.telarlabs.net"};
+var K=/^(pizarrapad|quizpolice|qp-|tixward|telar-tixward|drafttrail)/,KNOWN=["pizarrapad-images","drafttrail"],to=M[location.hostname];
+function lsKeys(){var o={};try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(K.test(k))o[k]=localStorage.getItem(k)}}catch(e){}return o}
+function dbNames(){if(!window.indexedDB)return Promise.resolve([]);if(indexedDB.databases)return indexedDB.databases().then(function(d){return d.map(function(x){return x.name}).filter(function(n){return K.test(n||"")})},function(){return []});return Promise.resolve([])}
+function dump(name){return new Promise(function(res){var rq=indexedDB.open(name);rq.onerror=function(){res(null)};rq.onsuccess=function(){var db=rq.result,N=[].slice.call(db.objectStoreNames),out=[];if(!N.length){db.close();return res(null)}
+ var tx=db.transaction(N,"readonly");N.forEach(function(n){var os=tx.objectStore(n),s={name:n,keyPath:os.keyPath,autoIncrement:os.autoIncrement,indexes:[].slice.call(os.indexNames).map(function(i){var x=os.index(i);return {name:i,keyPath:x.keyPath,unique:x.unique,multiEntry:x.multiEntry}}),items:[]};out.push(s);
+  var c=os.openCursor();c.onsuccess=function(){var r=c.result;if(r){s.items.push([r.primaryKey,r.value]);r.continue()}}});
+ tx.oncomplete=function(){db.close();res(out.some(function(s){return s.items.length})?{name:name,version:db.version,stores:out}:null)};tx.onerror=function(){res(null)}}})}
+function restore(d){return new Promise(function(res){var mk=function(db){d.stores.forEach(function(s){if(!db.objectStoreNames.contains(s.name)){var os=db.createObjectStore(s.name,s.keyPath==null?{autoIncrement:s.autoIncrement}:{keyPath:s.keyPath,autoIncrement:s.autoIncrement});s.indexes.forEach(function(x){os.createIndex(x.name,x.keyPath,{unique:x.unique,multiEntry:x.multiEntry})})}})};
+ var put=function(db){var N=d.stores.map(function(s){return s.name}).filter(function(n){return db.objectStoreNames.contains(n)});if(!N.length){db.close();return res()}var tx=db.transaction(N,"readwrite");
+  d.stores.forEach(function(s){if(N.indexOf(s.name)<0)return;var os=tx.objectStore(s.name);s.items.forEach(function(it){if(os.keyPath==null)os.put(it[1],it[0]);else os.put(it[1])})});tx.oncomplete=tx.onerror=function(){db.close();res()}};
+ var rq=indexedDB.open(d.name,d.version);rq.onupgradeneeded=function(){mk(rq.result)};rq.onsuccess=function(){put(rq.result)};
+ rq.onerror=function(e){e.preventDefault&&e.preventDefault();var r2=indexedDB.open(d.name);r2.onsuccess=function(){put(r2.result)};r2.onerror=function(){res()}}})}
+// ---- on the new address: receive work moved from an old address
+if(!to){if(/[?&]telar-move=1/.test(location.search)&&window.opener){var OK=Object.keys(M).map(function(h){return location.protocol+"//"+h});
+  addEventListener("message",function(e){if(OK.indexOf(e.origin)<0||!e.data||e.data.t!=="telar-move-data")return;var ls=e.data.ls||{},clash=Object.keys(ls).filter(function(k){var v=null;try{v=localStorage.getItem(k)}catch(x){}return v!==null&&v!==ls[k]});
+   var all=!clash.length||confirm("This new address already has some saved work. Replace it with the work from the old address?\n\nOK = use the old address’s work. Cancel = keep both where possible.");
+   try{Object.keys(ls).forEach(function(k){if(all||localStorage.getItem(k)===null)localStorage.setItem(k,ls[k])})}catch(x){}
+   Promise.all((e.data.idb||[]).map(restore)).then(function(){try{e.source.postMessage({t:"telar-move-done"},e.origin)}catch(x){}location.replace(e.data.path||"/")})});
+  window.opener.postMessage({t:"telar-move-ready"},"*")}return}
+// ---- on an old address
+var url=location.protocol+"//"+to+location.pathname+location.search+location.hash,go=function(){location.replace(url)};
+try{if(localStorage.getItem("telar-moved")){go();return}}catch(e){}
+var ls=lsKeys();dbNames().then(function(names){if(!Object.keys(ls).length&&!names.length){go();return}
+ var show=function(){try{if(sessionStorage.getItem("telar-stay"))return}catch(e){}
+  var b=document.createElement("div");b.setAttribute("role","dialog");b.style.cssText="position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483646;max-width:560px;margin:0 auto;background:#fff;color:#14181f;border:1px solid #d9dde5;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.25);padding:16px 18px;font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif";
+  b.innerHTML='<b style="font-size:17px">We have a new address: '+to+'</b><p style="margin:6px 0 12px">Your saved work is on this old address. Move it to the new one, so it’s there next time.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button data-a="mv" style="background:#1d6b4f;color:#fff;border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:700;cursor:pointer">Move my work and go there</button><button data-a="go" style="background:#fff;border:1px solid #c8ccd4;border-radius:10px;padding:10px 14px;font:inherit;cursor:pointer">Go without it</button><button data-a="no" style="background:none;border:0;padding:10px 6px;font:inherit;color:#5b6474;cursor:pointer;text-decoration:underline">Not now</button></div><p data-m style="margin:10px 0 0;color:#5b6474;display:none"></p>';
+  document.body.appendChild(b);var msg=function(t){var p=b.querySelector("[data-m]");p.style.display="block";p.textContent=t};
+  b.querySelector('[data-a="no"]').onclick=function(){try{sessionStorage.setItem("telar-stay","1")}catch(e){}b.remove()};
+  b.querySelector('[data-a="go"]').onclick=go;
+  b.querySelector('[data-a="mv"]').onclick=function(){var w=window.open(location.protocol+"//"+to+"/?telar-move=1");if(!w){msg("Your browser blocked the new tab. Allow pop-ups for this site, then try again.");return}msg("Moving your work…");
+   addEventListener("message",function(e){if(e.origin!==location.protocol+"//"+to||!e.data)return;
+    if(e.data.t==="telar-move-ready")Promise.all(names.map(dump)).then(function(idb){w.postMessage({t:"telar-move-data",ls:lsKeys(),idb:idb.filter(Boolean),path:location.pathname+location.search+location.hash},location.protocol+"//"+to)});
+    if(e.data.t==="telar-move-done"){try{localStorage.setItem("telar-moved","1")}catch(x){}msg("✓ Moved. Your work is now at "+to+".");setTimeout(go,1500)}})}};
+ if(document.body)show();else addEventListener("DOMContentLoaded",show)})})();</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animal Race: A Fun Random Name Picker Game for the Classroom | PizarraPad</title>
+<meta name="description" content="A free animal race for the classroom: each student or team gets a cute animal, and they race to the finish line. A fun, fair way to pick a winner or who goes first. Full screen for the projector.">
+<link rel="canonical" href="https://pizarrapad.telarlabs.net/tools/animal-race/">
+<meta property="og:title" content="Animal Race: A Fun Random Name Picker Game for the Classroom | PizarraPad"><meta property="og:description" content="A free animal race for the classroom: each student or team gets a cute animal, and they race to the finish line. A fun, fair way to pick a winner or who goes first. Full screen for the projector."><meta property="og:url" content="https://pizarrapad.telarlabs.net/tools/animal-race/">
+<meta property="og:image" content="https://pizarrapad.telarlabs.net/og.png"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="manifest" href="/manifest.webmanifest"><meta name="theme-color" content="#1D7A50">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/assets/fonts/fonts.css">
+<link rel="stylesheet" href="/assets/site.css?v=1ca76dd9">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4326677240395780" crossorigin="anonymous"></script>
+</head>
+<body>
+<header class="top"><div class="wrap top-in">
+  <span class="tl-wrap"><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a><a class="tl-by" href="https://telarlabs.net" title="Telar Labs home"><span>by </span>Telar Labs</a><style>.tl-wrap{display:flex;align-items:center;min-width:0}.tl-by{margin-left:10px;font-size:13px;font-weight:500;line-height:1;color:inherit;opacity:.65;text-decoration:none;white-space:nowrap;flex:none}.tl-by:hover{opacity:1;text-decoration:underline}@media(max-width:560px){.tl-wrap{flex-direction:column;align-items:flex-start}.tl-by{margin:3px 0 0;font-size:11.5px}}</style></span>
+  <nav class="nav"><a href="/tools/">Classroom tools</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/about/">About</a></nav>
+  <a class="btn btn-sm" href="/board/">Open the board</a>
+</div></header>
+<main id="main">
+<article class="wrap prose"><style>
+.tool{background:var(--board);color:var(--chalk);border-radius:22px;padding:56px 22px 22px;margin:8px 0 34px;position:relative;box-shadow:0 14px 34px rgba(16,32,24,.18)}
+.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:4vh 5vw}
+.tool .tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:12px}
+.tool button,.tool select{font:inherit;font-weight:700;font-size:16px;border-radius:999px;border:2px solid rgba(242,240,228,.35);background:transparent;color:var(--chalk);padding:8px 16px;cursor:pointer;touch-action:manipulation}
+.tool button.on,.tool .go{background:var(--chalk);color:var(--board);border-color:var(--chalk)}
+.tool button:disabled{opacity:.4;cursor:default}
+.tool .fs{position:absolute;top:12px;right:12px;padding:6px 12px;font-size:14px}
+.tool .big{font-family:var(--display);text-align:center;line-height:1.05;margin:8px 0}
+.tool textarea{width:100%;min-height:150px;border-radius:12px;border:2px solid rgba(242,240,228,.3);background:rgba(0,0,0,.18);color:var(--chalk);font:16px/1.5 var(--body);padding:10px}
+.tool .note{font-size:14px;opacity:.75;text-align:center;margin:8px 0 0}
+.tool:fullscreen .ed{display:none}
+.tbar label{display:flex;align-items:center;gap:6px;font-size:15px}
+.ttiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:18px 0}
+.ttiles a{display:block;border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--card);text-decoration:none;color:var(--fg)}
+.ttiles b{display:block;font-size:20px;color:var(--accent);margin-bottom:4px}
+</style><p class="muted" style="font-size:14px;margin:0 0 6px"><a href="/tools/">Classroom tools</a></p><h1>Animal race</h1><div class="tool" id="ar"><button class="fs" type="button" onclick="const t=this.parentElement;if(document.fullscreenElement)document.exitFullscreen();else if(t.requestFullscreen)t.requestFullscreen();else if(t.webkitRequestFullscreen)t.webkitRequestFullscreen()">⛶ Full screen</button>
+ <div class="ar-track" id="arTrack"></div>
+ <div class="big" id="arMsg" style="font-size:clamp(30px,6vw,70px);min-height:1.2em" aria-live="polite"></div>
+ <div class="tbar"><button class="go" type="button" id="arGo">Start the race</button><label class="ed">Race length <select id="arLen"><option value="8">Quick (8 s)</option><option value="14" selected>Normal (14 s)</option><option value="24">Long (24 s)</option></select></label><label class="ed"><input type="checkbox" id="arSnd" checked> Sound</label></div>
+ <div class="ed" style="margin-top:12px">
+  <textarea id="arList" placeholder="One racer per line: names or teams (up to 12)"></textarea>
+  <div class="tbar" style="margin-top:10px"><button type="button" id="arShuf">Shuffle the animals</button></div>
+  <p class="note" id="arInfo"></p>
+ </div>
+</div>
+<style>
+.tool [hidden]{display:none!important}
+.ar-track{position:relative;background:repeating-linear-gradient(90deg,transparent 0 60px,rgba(242,240,228,.05) 60px 61px);border:2px dashed rgba(242,240,228,.35);border-radius:16px;padding:6px 0;margin-bottom:10px;overflow:hidden}
+.ar-lane{position:relative;height:var(--lh,64px);border-bottom:2px dashed rgba(242,240,228,.18)}.ar-lane:last-child{border-bottom:0}
+.ar-lane .nm{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-weight:800;font-size:clamp(13px,1.8vw,18px);opacity:.55;white-space:nowrap;max-width:30%;overflow:hidden;text-overflow:ellipsis}
+.ar-run{position:absolute;top:0;height:100%;left:0;display:flex;align-items:center;will-change:transform}
+.ar-run svg{height:88%;width:auto}.ar-run.hop svg{animation:hop .32s ease-in-out infinite alternate}
+.ar-run b{background:var(--chalk);color:var(--board);border-radius:99px;padding:1px 9px;font-size:clamp(11px,1.5vw,15px);margin-left:4px;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}
+.ar-fin{position:absolute;top:0;bottom:0;right:7%;width:14px;background:repeating-linear-gradient(0deg,#f2f0e4 0 10px,#203a2f 10px 20px);opacity:.9}
+.ar-place{font-weight:800;margin-right:6px;opacity:1}.ar-lane .nm .ar-place:empty{display:none}.ar-lane.fin .nm{opacity:1}@media(max-width:640px){.ar-run b{display:none}}
+@keyframes hop{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-14%) rotate(3deg)}}
+.ar-count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:clamp(70px,14vw,180px);text-shadow:0 4px 12px rgba(0,0,0,.4);pointer-events:none}
+</style>
+<script>(()=>{let AC=null;function chime(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);const t=AC.currentTime+i*.18;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.9);o.start(t);o.stop(t+1)})}catch(e){}}
+function tick(f){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f||880;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.08,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+.08);o.start();o.stop(AC.currentTime+.1)}catch(e){}}
+const store={get:(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+// original, simple animal drawings (side view, facing right), each an SVG string
+function face(x,y,s){return '<circle cx="'+x+'" cy="'+y+'" r="'+(4.2*s)+'" fill="#1b1b1b"/><circle cx="'+(x+1.4*s)+'" cy="'+(y-1.4*s)+'" r="'+(1.4*s)+'" fill="#fff"/>'}
+function cheek(x,y){return '<ellipse cx="'+x+'" cy="'+y+'" rx="5" ry="3.2" fill="#ff8fa3" opacity=".75"/>'}
+const ANIMALS={
+ duck:{n:'Duck',svg:'<ellipse cx="44" cy="62" rx="30" ry="20" fill="#FFD84D"/><path d="M18 58 q-10 -8 -6 -18 q8 6 14 8z" fill="#FFD84D"/><circle cx="70" cy="36" r="17" fill="#FFD84D"/><path d="M84 36 l16 3 l-16 6z" fill="#FF9F1C"/>'+face(74,32,1)+cheek(72,44)+'<path d="M36 60 q10 10 22 0" stroke="#E8B800" stroke-width="3" fill="none"/><path d="M40 82 v8 M52 82 v8" stroke="#FF9F1C" stroke-width="4" stroke-linecap="round"/>'},
+ bunny:{n:'Bunny',svg:'<ellipse cx="44" cy="62" rx="28" ry="20" fill="#F5F0F7"/><circle cx="18" cy="58" r="7" fill="#fff"/><ellipse cx="62" cy="14" rx="6" ry="17" fill="#F5F0F7"/><ellipse cx="62" cy="14" rx="3" ry="12" fill="#FFC2D1"/><ellipse cx="74" cy="12" rx="6" ry="17" fill="#F5F0F7" transform="rotate(14 74 12)"/><ellipse cx="74" cy="12" rx="3" ry="12" fill="#FFC2D1" transform="rotate(14 74 12)"/><circle cx="70" cy="40" r="17" fill="#F5F0F7"/>'+face(76,37,1)+cheek(74,48)+'<circle cx="86" cy="43" r="2.6" fill="#FF8FA3"/><path d="M36 80 v8 M54 80 v8" stroke="#E5DCEB" stroke-width="6" stroke-linecap="round"/>'},
+ turtle:{n:'Turtle',svg:'<ellipse cx="44" cy="70" rx="34" ry="6" fill="#5FAE63"/><path d="M14 68 q30 -50 60 0z" fill="#3E8E41"/><path d="M28 64 l8 -14 l14 0 l8 14 M36 50 l6 -8 l6 8" stroke="#2C6B2F" stroke-width="2.5" fill="none"/><circle cx="84" cy="56" r="12" fill="#7BC67E"/>'+face(88,53,.9)+cheek(87,62)+'<path d="M24 74 v8 M60 74 v8" stroke="#5FAE63" stroke-width="7" stroke-linecap="round"/>'},
+ cat:{n:'Cat',svg:'<ellipse cx="44" cy="62" rx="28" ry="19" fill="#F2A65A"/><path d="M16 56 q-14 -18 -2 -30" stroke="#F2A65A" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M58 30 l3 -18 l12 12z M78 24 l10 -14 l3 18z" fill="#F2A65A"/><circle cx="72" cy="38" r="17" fill="#F2A65A"/><path d="M40 50 q4 10 0 22 M50 48 q4 10 0 24" stroke="#D9853B" stroke-width="3" fill="none"/>'+face(78,35,1)+cheek(76,46)+'<path d="M86 42 l8 -2 M86 45 l8 2" stroke="#6b4a2b" stroke-width="1.6"/><path d="M34 80 v8 M56 80 v8" stroke="#F2A65A" stroke-width="7" stroke-linecap="round"/>'},
+ pig:{n:'Piggy',svg:'<ellipse cx="44" cy="62" rx="30" ry="21" fill="#FFB3C1"/><path d="M14 58 q-6 -4 -3 -9 q4 4 -1 9" stroke="#FF8FA3" stroke-width="2.5" fill="none"/><circle cx="72" cy="42" r="17" fill="#FFB3C1"/><path d="M62 26 l4 -10 l8 8z" fill="#FF8FA3"/><ellipse cx="88" cy="46" rx="7" ry="6" fill="#FF8FA3"/><circle cx="86" cy="46" r="1.4" fill="#b85c6e"/><circle cx="90" cy="46" r="1.4" fill="#b85c6e"/>'+face(76,37,.95)+'<path d="M32 80 v9 M56 80 v9" stroke="#FF8FA3" stroke-width="7" stroke-linecap="round"/>'},
+ frog:{n:'Frog',svg:'<ellipse cx="46" cy="64" rx="32" ry="18" fill="#6CCB5F"/><circle cx="66" cy="34" r="9" fill="#6CCB5F"/><circle cx="82" cy="36" r="9" fill="#6CCB5F"/><ellipse cx="74" cy="48" rx="20" ry="14" fill="#6CCB5F"/>'+face(67,33,1)+face(83,35,1)+'<path d="M66 54 q10 6 20 0" stroke="#2f7a28" stroke-width="2.5" fill="none"/>'+cheek(64,52)+'<path d="M22 76 q-8 6 -2 10 M60 78 q6 6 12 6" stroke="#4FA845" stroke-width="7" fill="none" stroke-linecap="round"/>'},
+ chick:{n:'Chick',svg:'<circle cx="52" cy="56" r="28" fill="#FFE873"/><path d="M50 26 q4 -10 10 -4 q-6 0 -6 6" fill="#FFE873"/><path d="M78 52 l14 4 l-14 6z" fill="#FF9F1C"/>'+face(68,48,1)+cheek(66,60)+'<path d="M38 60 q8 8 16 0" stroke="#F2C94C" stroke-width="3" fill="none"/><path d="M44 82 v8 M58 82 v8" stroke="#FF9F1C" stroke-width="4" stroke-linecap="round"/>'},
+ penguin:{n:'Penguin',svg:'<ellipse cx="50" cy="56" rx="24" ry="30" fill="#2B2D42"/><ellipse cx="56" cy="62" rx="15" ry="22" fill="#fff"/><path d="M70 40 l14 3 l-14 5z" fill="#FF9F1C"/>'+face(62,38,.95).replace('#1b1b1b','#1b1b1b')+'<circle cx="62" cy="38" r="6" fill="#fff"/>'+face(63,38,.9)+cheek(60,50)+'<path d="M30 54 q-10 12 -2 20" stroke="#2B2D42" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M44 86 h8 M58 86 h8" stroke="#FF9F1C" stroke-width="5" stroke-linecap="round"/>'},
+ bear:{n:'Bear',svg:'<ellipse cx="44" cy="62" rx="30" ry="21" fill="#A47148"/><circle cx="62" cy="24" r="7" fill="#A47148"/><circle cx="84" cy="26" r="7" fill="#A47148"/><circle cx="72" cy="40" r="18" fill="#A47148"/><ellipse cx="84" cy="46" rx="9" ry="7" fill="#E0C097"/><circle cx="88" cy="43" r="2.6" fill="#3a2414"/>'+face(74,36,1)+cheek(70,48)+'<path d="M32 80 v9 M56 80 v9" stroke="#8C5E3C" stroke-width="8" stroke-linecap="round"/>'},
+ fox:{n:'Fox',svg:'<ellipse cx="46" cy="62" rx="28" ry="18" fill="#F07B3F"/><path d="M20 60 q-20 -6 -14 -22 q10 12 22 14z" fill="#F07B3F"/><path d="M8 40 q2 -4 6 -2 l-4 6z" fill="#fff"/><path d="M60 30 l2 -18 l12 12z M80 26 l8 -16 l4 18z" fill="#F07B3F"/><path d="M58 40 q14 -20 30 0 l8 8 q-18 10 -38 -8z" fill="#F07B3F"/><path d="M78 46 l18 2 q-10 8 -22 2z" fill="#fff"/><circle cx="96" cy="47" r="2.4" fill="#1b1b1b"/>'+face(78,38,.95)+'<path d="M34 78 v9 M56 78 v9" stroke="#3a2a20" stroke-width="6" stroke-linecap="round"/>'},
+ mouse:{n:'Mouse',svg:'<ellipse cx="46" cy="64" rx="26" ry="17" fill="#C9C9D3"/><path d="M20 66 q-16 2 -16 -12" stroke="#E7A9B6" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="64" cy="30" r="11" fill="#C9C9D3"/><circle cx="64" cy="30" r="6" fill="#FFC2D1"/><ellipse cx="76" cy="48" rx="16" ry="13" fill="#C9C9D3"/><circle cx="92" cy="50" r="3" fill="#FF8FA3"/>'+face(80,44,.9)+cheek(76,54)+'<path d="M38 80 v7 M54 80 v7" stroke="#B5B5C2" stroke-width="5" stroke-linecap="round"/>'},
+ panda:{n:'Panda',svg:'<ellipse cx="44" cy="62" rx="30" ry="21" fill="#F7F7F7"/><path d="M30 46 q14 -6 28 0 v18 q-14 6 -28 0z" fill="#2B2D42"/><circle cx="62" cy="24" r="7" fill="#2B2D42"/><circle cx="84" cy="26" r="7" fill="#2B2D42"/><circle cx="72" cy="40" r="18" fill="#F7F7F7"/><ellipse cx="78" cy="37" rx="6" ry="7" fill="#2B2D42"/><circle cx="79" cy="36" r="2.4" fill="#fff"/><circle cx="88" cy="46" r="2.6" fill="#2B2D42"/>'+cheek(70,48)+'<path d="M32 80 v9 M56 80 v9" stroke="#2B2D42" stroke-width="8" stroke-linecap="round"/>'}
+};
+const ORDER=['duck','bunny','turtle','cat','pig','frog','chick','penguin','bear','fox','mouse','panda'];
+function animalSVG(k){return '<svg viewBox="0 0 104 96" aria-hidden="true">'+ANIMALS[k].svg+'</svg>'}
+
+const $=i=>document.getElementById(i);const SAMPLE='Mia\nNoah\nWei\nAva\nLiam\nSofia';
+$('arList').value=store.get('pp-ar',SAMPLE);$('arLen').value=store.get('pp-ar-len','14');let order=JSON.parse(store.get('pp-ar-order','null'))||ORDER.slice(),racing=false;
+const racers=()=>$('arList').value.split('\n').map(s=>s.trim()).filter(Boolean).slice(0,12);
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function lay(){const R=racers(),n=R.length;$('arInfo').textContent=n?n+' racer'+(n>1?'s':'')+(R.length<$('arList').value.split('\n').filter(s=>s.trim()).length?' (12 is the most)':''):'Add 2 to 12 racers, one per line.';
+ const lh=Math.max(44,Math.min(90,Math.round(420/Math.max(n,1))));$('arTrack').style.setProperty('--lh',lh+'px');
+ $('arTrack').innerHTML='<div class="ar-fin"></div>'+R.map((r,i)=>'<div class="ar-lane" id="arL'+i+'"><span class="nm"><span class="ar-place" id="arP'+i+'"></span>'+esc(r)+'</span><div class="ar-run" id="arR'+i+'">'+animalSVG(order[i%order.length])+'<b>'+esc(r)+'</b></div></div>').join('')}
+function save(){store.set('pp-ar',$('arList').value);store.set('pp-ar-len',$('arLen').value);store.set('pp-ar-order',JSON.stringify(order))}
+function beep(f,d){if(!$('arSnd').checked)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.15,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function race(){const R=racers(),n=R.length;if(racing||n<2){if(n<2)$('arMsg').textContent='Add at least 2 racers';return}racing=true;lay();$('arMsg').textContent='';$('arGo').disabled=true;
+ // finishing order is drawn fairly first; the race then plays it out with surprises along the way
+ const rnd=()=>crypto.getRandomValues(new Uint32Array(1))[0]/4294967296,fin=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[fin[i],fin[j]]=[fin[j],fin[i]]}
+ const T=+$('arLen').value*1000,track=$('arTrack'),W=track.clientWidth,runW=Math.min(170,W*.2),goal=W*.93-runW*.62;
+ const P=fin.map((who,place)=>({who,place,end:T*(.86+place*.14/Math.max(1,n-1))+rnd()*120*place,k:[...Array(5)].map(()=>.6+rnd()*.8)}));
+ const ov=document.createElement('div');ov.className='ar-count';track.appendChild(ov);let c=3;
+ (function count(){if(c>0){ov.textContent=c;beep(660,.18);c--;setTimeout(count,700)}else{ov.textContent='GO!';beep(990,.35);setTimeout(()=>ov.remove(),500);start()}})();
+ function pos(p,t){if(t>=p.end)return 1;const u=t/p.end;let s=0,tot=0;p.k.forEach(k=>tot+=k);let acc=0;for(let i=0;i<5;i++){const seg=Math.min(1,Math.max(0,u*5-i));acc+=p.k[i]*seg}return Math.min(1,acc/tot)}
+ function start(){const t0=performance.now();let done=0;R.forEach((_,i)=>$('arR'+i).classList.add('hop'));const placed=new Set();
+  (function f(t){const e=t-t0;P.forEach(p=>{const x=pos(p,e)*goal;$('arR'+p.who).style.transform='translateX('+x+'px)';
+    if(x>=goal-.5&&!placed.has(p.who)){placed.add(p.who);$('arR'+p.who).classList.remove('hop');$('arP'+p.who).textContent=['🥇','🥈','🥉'][p.place]||(p.place+1)+'th';$('arL'+p.who).classList.add('fin');if(p.place===0){$('arMsg').textContent='🏆 '+R[p.who]+' wins!';$('arMsg').animate([{transform:'scale(1.2)'},{transform:'scale(1)'}],{duration:450});if($('arSnd').checked)chime()}}});
+   if(placed.size<n)requestAnimationFrame(f);else{racing=false;$('arGo').disabled=false;$('arGo').textContent='Race again'}})(t0)}}
+$('arGo').onclick=race;$('arList').oninput=()=>{save();if(!racing)lay()};$('arLen').onchange=save;
+$('arShuf').onclick=()=>{for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}save();if(!racing)lay()};
+addEventListener('resize',()=>{if(!racing)lay()});
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(e.target.tagName)){e.preventDefault();race()}});
+lay()})();</script><h2>How to play the animal race</h2>
+<ol><li><b>Type the racers</b>, one per line: student names, teams or even answer choices. Up to 12 can race.</li>
+<li>Each racer gets a cute animal: a duck, bunny, turtle, cat, piggy, frog, chick, penguin, bear, fox, mouse or panda. <b>Shuffle the animals</b> to swap them.</li>
+<li><b>Press Start the race</b>. After “3, 2, 1, GO!”, the animals hop to the finish line, overtaking each other along the way.</li>
+<li>The winner gets 🥇, then 🥈 and 🥉. Press <b>Race again</b> for another round.</li></ol>
+<h2>Is the race fair?</h2>
+<p>Yes. The finishing order is drawn with your browser’s secure random numbers when you press Start, so every racer has the same chance. The overtaking you see is just for fun, and the slow turtle wins as often as the fox.</p>
+<h2>Ideas for class</h2>
+<ul><li><b>Who goes first:</b> presentations, games or lining up.</li>
+<li><b>Team points:</b> race the teams; 1st place earns 3 points, 2nd 2 points, 3rd 1 point.</li>
+<li><b>Predict the winner:</b> before the race, students write down who they think will win. A fun way to talk about chance and probability.</li>
+<li><b>Answer race:</b> type four answer choices as the racers for a light-hearted “which one wins?” before revealing the right answer.</li>
+<li><b>Party games</b> and raffles at class parties.</li></ul>
+<h2>Questions</h2>
+<h3>Is the class list saved?</h3><p>Yes, in this browser only. Nothing is sent to us.</p>
+<h3>Want a quieter way to pick?</h3><p>Use the <a href="/tools/spinner-wheel/">spinner wheel</a> or the <a href="/tools/random-name-picker/">random name picker</a>.</p><h2>More classroom tools</h2><ul><li><a href="/tools/timer/">Classroom timer</a></li><li><a href="/tools/random-name-picker/">Random name picker</a></li><li><a href="/tools/dice/">Classroom dice</a></li><li><a href="/tools/noise-meter/">Noise meter</a></li><li><a href="/tools/pomodoro-timer/">Pomodoro timer</a></li><li><a href="/tools/spinner-wheel/">Spinner wheel</a></li><li><a href="/tools/icebreaker-cards/">Icebreaker cards</a></li><li><a href="/board/">The PizarraPad whiteboard</a></li></ul></article>
+</main>
+<footer class="foot"><div class="wrap foot-in">
+  <div><a class="logo" href="/"><svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#203A2F"/><path d="M8 21c3-6 5-9 7-9s1 7 3 7 3-5 6-8" fill="none" stroke="#F2F0E4" stroke-width="2.4" stroke-linecap="round"/></svg><span>PizarraPad</span></a>
+  <p class="muted">A free whiteboard, blackboard and greenboard for teachers. Part of the Telar Labs teacher tools.</p></div>
+  <div class="foot-cols">
+    <div><h4>Use it</h4><a href="/board/">Open the board</a><a href="/tools/">Classroom tools</a><a href="/tools/timer/">Classroom timer</a><a href="/tools/random-name-picker/">Random name picker</a><a href="/tools/spinner-wheel/">Spinner wheel</a><a href="/tools/pomodoro-timer/">Pomodoro timer</a><a href="/how-to-use/">How to use</a><a href="/projector/">Use with a projector</a><a href="/guides/">Guides</a><a href="/faq/">FAQ</a></div>
+    <div><h4><a href="https://telarlabs.net" style="color:inherit;margin:0">Telar Labs</a></h4><a href="https://telarlabs.net">Telar Labs home</a><a href="https://telarlabs.net/guides/">Telar Labs guides</a><a href="/about/">About</a><a href="/privacy/">Privacy policy</a><a href="/terms/">Terms of use</a><a href="/contact/">Contact</a></div>
+  </div>
+</div><div class="wrap family"><span class="family-h"><a href="https://telarlabs.net">More from Telar Labs</a>:</span><a class="app-telarclips" href="https://clips.telarlabs.net" title="Free motion backgrounds and illustrated scenes for class videos, greetings and school programs.">Telar Clips</a><a class="app-quizpolice" href="https://quizpolice.telarlabs.net" title="Free quiz monitor that shows you when students leave an online quiz.">QuizPolice</a><a class="app-drafttrail" href="https://drafttrail.telarlabs.net" title="Free writing recorder that replays how an essay was written, step by step.">DraftTrail</a><a class="app-tixward" href="https://tixward.telarlabs.net" title="Event tickets and free bookings for courts and rooms, paid directly to organizers. Free for most events.">Tixward</a></div><div class="wrap fine">&copy; 2026 Telar Labs.</div></footer>
+</body>
+</html>

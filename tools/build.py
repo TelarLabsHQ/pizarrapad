@@ -127,7 +127,7 @@ def home():
 <section class="wrap section"><h2>Everything you need at the front of the class</h2><div class="feats">{feats}</div></section>
 {ad("home")}
 <section class="wrap section steps-sec"><h2>Start in three steps</h2>
-<ol class="steps"><li><h3>Open the board</h3><p>Go to <a href="/board/">the board</a> on your laptop, tablet or phone. Add it to your home screen to use it like an app.</p></li>
+<ol class="steps"><li><h3>Open the board</h3><p>Go to <a href="/board/">the board</a> on your laptop, tablet or phone. To use it like an app, tap ⋯ and <b>Install PizarraPad as an app</b>, or add it to your home screen.</p></li>
 <li><h3>Pick your board and tools</h3><p>Tap ⋯ to choose whiteboard, blackboard or greenboard and plain, lined or grid. Pick the pen, color and thickness in the tool bar.</p></li>
 <li><h3>Show it to the class</h3><p>Connect your laptop to the projector or TV, or mirror your tablet. <a href="/projector/">See the options</a>.</p></li></ol></section>
 <section class="wrap section"><h2>Coming next</h2><div class="feats">

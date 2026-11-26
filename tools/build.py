@@ -114,6 +114,12 @@ def home():
     <div class="mock mock-white"><span class="ink">Photosynthesis</span><svg viewBox="0 0 200 60"><path d="M10 40c30-30 60 20 90-10s60 10 90-5" fill="none" stroke="#D7263D" stroke-width="3" stroke-linecap="round"/></svg></div>
   </div>
 </div></section>
+<section class="wrap section"><h2>Free classroom tools</h2><div class="feats">
+<a class="feat" href="/tools/timer/" style="text-decoration:none;color:inherit"><h3>⏱ Classroom timer</h3><p>A big countdown for the projector, with color warnings and a gentle chime.</p></a>
+<a class="feat" href="/tools/random-name-picker/" style="text-decoration:none;color:inherit"><h3>🎯 Random name picker</h3><p>Pick a student fairly, or make random groups.</p></a>
+<a class="feat" href="/tools/dice/" style="text-decoration:none;color:inherit"><h3>🎲 Dice</h3><p>Roll up to six dice on the big screen for games and math.</p></a>
+<a class="feat" href="/tools/noise-meter/" style="text-decoration:none;color:inherit"><h3>🔊 Noise meter</h3><p>Shows how loud the room is, so the class can keep it down.</p></a></div>
+<p><a href="/tools/">All classroom tools →</a></p></section>
 <section class="wrap section"><h2>Everything you need at the front of the class</h2><div class="feats">{feats}</div></section>
 {ad("home")}
 <section class="wrap section steps-sec"><h2>Start in three steps</h2>

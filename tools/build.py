@@ -95,7 +95,7 @@ FEATURES = [
     ('Add pictures', 'Insert a photo, diagram or worksheet picture, or snap one with your phone camera. Move and resize it, then write on top.'),
     ('Pages and saving', 'Add as many pages as your lesson needs. Everything saves on your device automatically. Save any page as an image, or the whole lesson as a PDF.'),
     ('Works offline', 'Once opened, the board keeps working even when the school Wi-Fi drops.'),
-    ('English, Español, 中文', 'The board speaks English, Spanish and Simplified Chinese, and picks your device language automatically.'),
+    ('English, Español, 中文, 日本語, 한국어, Русский', 'The board speaks English, Spanish, Simplified Chinese, Japanese, Korean and Russian, and picks your device language automatically.'),
     ('Free, no account', 'No sign-up, no limits on pages, no watermark. Open it and teach.'),
 ]
 
@@ -148,7 +148,7 @@ def pages():
 <h2>Board and background</h2>
 <p>Tap <b>⋯</b> at the top right to choose <b>Whiteboard</b>, <b>Blackboard</b> or <b>Greenboard</b>; a <b>Plain</b>, <b>Lines</b> (handwriting guide) or <b>Grid</b> background. Pen colors adjust automatically so they're easy to see on each board.</p>
 <h2>Language</h2>
-<p>The board's buttons and menus come in <b>English</b>, <b>Español</b> and <b>中文</b> (Simplified Chinese). It follows your device language at first; change it any time under <b>⋯ → Language</b>.</p>
+<p>The board's buttons and menus come in <b>English</b>, <b>Español</b>, <b>中文</b> (Simplified Chinese), <b>日本語</b> (Japanese), <b>한국어</b> (Korean) and <b>Русский</b> (Russian). It follows your device language at first; change it any time under <b>⋯ → Language</b>.</p>
 <h2>Writing with a stylus (Pen only)</h2>
 <p>Turn on <b>Pen only</b> at the top. Your stylus draws, while fingers scroll and pinch-zoom, so resting your palm on a tablet won't leave marks. Turn it off if you want to draw with your finger.</p>
 <h2>Moving around</h2>
@@ -210,7 +210,7 @@ def pages():
            ('Can students use it?', 'Yes, it works on any device with a browser. Each device keeps its own boards.'),
            ('Can I install it like an app?', 'Yes. In Chrome or Edge choose "Install app" or "Add to home screen"; on iPad/iPhone use Share → Add to Home Screen.'),
            ('Can I add pictures?', 'Yes. Use the Image tool to add a photo, diagram or worksheet picture, then write on top of it. Pictures are saved on your device with the board.'),
-           ('Which languages does the board support?', 'English, Spanish (Español) and Simplified Chinese (中文). Change it under ⋯ → Language.'),
+           ('Which languages does the board support?', 'English, Spanish (Español), Simplified Chinese (中文), Japanese (日本語), Korean (한국어) and Russian (Русский). Change it under ⋯ → Language.'),
            ('How do I undo a mistake?', 'Tap Undo, or press Ctrl+Z on a keyboard. Redo brings it back. Even Clear page can be undone.'),
            ('What is Pen only mode?', 'With Pen only turned on, only a stylus draws. Your palm and fingers scroll and zoom instead, so you can rest your hand on the screen while you write, like on paper.'),
            ('Which backgrounds are there?', 'Three boards (whiteboard, blackboard and greenboard), each with a plain, lined or grid background. Lines help with handwriting and grids with math, graphs and tables.'),

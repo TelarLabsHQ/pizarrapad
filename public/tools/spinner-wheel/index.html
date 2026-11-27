@@ -57,7 +57,7 @@ var ls=lsKeys();dbNames().then(function(names){if(!Object.keys(ls).length&&!name
 <main id="main">
 <article class="wrap prose"><style>
 .tool{background:var(--board);color:var(--chalk);border-radius:22px;padding:56px 22px 22px;margin:8px 0 34px;position:relative;box-shadow:0 14px 34px rgba(16,32,24,.18)}
-.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:4vh 5vw}
+.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:safe center;overflow:auto;padding:4vh 5vw}
 .tool .tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:12px}
 .tool button,.tool select{font:inherit;font-weight:700;font-size:16px;border-radius:999px;border:2px solid rgba(242,240,228,.35);background:transparent;color:var(--chalk);padding:8px 16px;cursor:pointer;touch-action:manipulation}
 .tool button.on,.tool .go{background:var(--chalk);color:var(--board);border-color:var(--chalk)}
@@ -83,7 +83,7 @@ var ls=lsKeys();dbNames().then(function(names){if(!Object.keys(ls).length&&!name
 </div>
 <style>
 .tool [hidden]{display:none!important}
-.wh-stage{position:relative;width:min(560px,100%);margin:0 auto}#wh:fullscreen .wh-stage{width:min(78vh,90vw)}
+.wh-stage{position:relative;width:min(560px,100%);margin:0 auto}#wh:fullscreen .wh-stage{width:min(66vh,90vw)}
 .wh-stage canvas{width:100%;height:auto;display:block;filter:drop-shadow(0 10px 18px rgba(0,0,0,.35))}
 .wh-ptr{position:absolute;top:50%;right:-6px;width:0;height:0;border-top:22px solid transparent;border-bottom:22px solid transparent;border-right:46px solid #F2C94C;transform:translateY(-50%);filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
 .tool .wh-hub{position:absolute;left:50%;top:50%;width:19%;height:19%;transform:translate(-50%,-50%);border-radius:50%;background:var(--chalk);color:var(--board);border:4px solid var(--board);font-weight:800;font-size:clamp(13px,2.4vw,20px);padding:0}

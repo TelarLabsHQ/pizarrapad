@@ -57,7 +57,7 @@ var ls=lsKeys();dbNames().then(function(names){if(!Object.keys(ls).length&&!name
 <main id="main">
 <article class="wrap prose"><style>
 .tool{background:var(--board);color:var(--chalk);border-radius:22px;padding:56px 22px 22px;margin:8px 0 34px;position:relative;box-shadow:0 14px 34px rgba(16,32,24,.18)}
-.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:4vh 5vw}
+.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:safe center;overflow:auto;padding:4vh 5vw}
 .tool .tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:12px}
 .tool button,.tool select{font:inherit;font-weight:700;font-size:16px;border-radius:999px;border:2px solid rgba(242,240,228,.35);background:transparent;color:var(--chalk);padding:8px 16px;cursor:pointer;touch-action:manipulation}
 .tool button.on,.tool .go{background:var(--chalk);color:var(--board);border-color:var(--chalk)}
@@ -90,7 +90,7 @@ var ls=lsKeys();dbNames().then(function(names){if(!Object.keys(ls).length&&!name
 .ar-run svg{height:88%;width:auto}.ar-run.hop svg{animation:hop .32s ease-in-out infinite alternate}
 .ar-run b{background:var(--chalk);color:var(--board);border-radius:99px;padding:1px 9px;font-size:clamp(11px,1.5vw,15px);margin-left:4px;white-space:nowrap;max-width:130px;overflow:hidden;text-overflow:ellipsis}
 .ar-fin{position:absolute;top:0;bottom:0;right:7%;width:14px;background:repeating-linear-gradient(0deg,#f2f0e4 0 10px,#203a2f 10px 20px);opacity:.9}
-.ar-place{font-weight:800;margin-right:6px;opacity:1}.ar-lane .nm .ar-place:empty{display:none}.ar-lane.fin .nm{opacity:1}@media(max-width:640px){.ar-run b{display:none}}
+.ar-place{font-weight:800;margin-right:6px;opacity:1}.ar-lane .nm .ar-place:empty{display:none}.ar-lane.fin .nm{opacity:1}#arTrack:not(.on) .nm{visibility:hidden}@media(max-width:640px){.ar-run b{display:none}}
 @keyframes hop{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-14%) rotate(3deg)}}
 .ar-count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:clamp(70px,14vw,180px);text-shadow:0 4px 12px rgba(0,0,0,.4);pointer-events:none}
 </style>
@@ -123,7 +123,7 @@ const racers=()=>$('arList').value.split('\n').map(s=>s.trim()).filter(Boolean).
 function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
 function lay(){const R=racers(),n=R.length;$('arInfo').textContent=n?n+' racer'+(n>1?'s':'')+(R.length<$('arList').value.split('\n').filter(s=>s.trim()).length?' (12 is the most)':''):'Add 2 to 12 racers, one per line.';
  const lh=Math.max(44,Math.min(90,Math.round(420/Math.max(n,1))));$('arTrack').style.setProperty('--lh',lh+'px');
- $('arTrack').innerHTML='<div class="ar-fin"></div>'+R.map((r,i)=>'<div class="ar-lane" id="arL'+i+'"><span class="nm"><span class="ar-place" id="arP'+i+'"></span>'+esc(r)+'</span><div class="ar-run" id="arR'+i+'">'+animalSVG(order[i%order.length])+'<b>'+esc(r)+'</b></div></div>').join('')}
+ $('arTrack').classList.remove('on');$('arTrack').innerHTML='<div class="ar-fin"></div>'+R.map((r,i)=>'<div class="ar-lane" id="arL'+i+'"><span class="nm"><span class="ar-place" id="arP'+i+'"></span>'+esc(r)+'</span><div class="ar-run" id="arR'+i+'">'+animalSVG(order[i%order.length])+'<b>'+esc(r)+'</b></div></div>').join('')}
 function save(){store.set('pp-ar',$('arList').value);store.set('pp-ar-len',$('arLen').value);store.set('pp-ar-order',JSON.stringify(order))}
 function beep(f,d){if(!$('arSnd').checked)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.15,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+d);o.start();o.stop(AC.currentTime+d)}catch(e){}}
 function race(){const R=racers(),n=R.length;if(racing||n<2){if(n<2)$('arMsg').textContent='Add at least 2 racers';return}racing=true;lay();$('arMsg').textContent='';$('arGo').disabled=true;
@@ -134,7 +134,7 @@ function race(){const R=racers(),n=R.length;if(racing||n<2){if(n<2)$('arMsg').te
  const ov=document.createElement('div');ov.className='ar-count';track.appendChild(ov);let c=3;
  (function count(){if(c>0){ov.textContent=c;beep(660,.18);c--;setTimeout(count,700)}else{ov.textContent='GO!';beep(990,.35);setTimeout(()=>ov.remove(),500);start()}})();
  function pos(p,t){if(t>=p.end)return 1;const u=t/p.end;let s=0,tot=0;p.k.forEach(k=>tot+=k);let acc=0;for(let i=0;i<5;i++){const seg=Math.min(1,Math.max(0,u*5-i));acc+=p.k[i]*seg}return Math.min(1,acc/tot)}
- function start(){const t0=performance.now();let done=0;R.forEach((_,i)=>$('arR'+i).classList.add('hop'));const placed=new Set();
+ function start(){$('arTrack').classList.add('on');const t0=performance.now();let done=0;R.forEach((_,i)=>$('arR'+i).classList.add('hop'));const placed=new Set();
   (function f(t){const e=t-t0;P.forEach(p=>{const x=pos(p,e)*goal;$('arR'+p.who).style.transform='translateX('+x+'px)';
     if(x>=goal-.5&&!placed.has(p.who)){placed.add(p.who);$('arR'+p.who).classList.remove('hop');$('arP'+p.who).textContent=['🥇','🥈','🥉'][p.place]||(p.place+1)+'th';$('arL'+p.who).classList.add('fin');if(p.place===0){$('arMsg').textContent='🏆 '+R[p.who]+' wins!';$('arMsg').animate([{transform:'scale(1.2)'},{transform:'scale(1)'}],{duration:450});if($('arSnd').checked)chime()}}});
    if(placed.size<n)requestAnimationFrame(f);else{racing=false;$('arGo').disabled=false;$('arGo').textContent='Race again'}})(t0)}}

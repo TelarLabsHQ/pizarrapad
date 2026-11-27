@@ -4,7 +4,7 @@ lists and settings are kept only in this browser."""
 
 CSS = '''<style>
 .tool{background:var(--board);color:var(--chalk);border-radius:22px;padding:56px 22px 22px;margin:8px 0 34px;position:relative;box-shadow:0 14px 34px rgba(16,32,24,.18)}
-.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:4vh 5vw}
+.tool:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:safe center;overflow:auto;padding:4vh 5vw}
 .tool .tbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-bottom:12px}
 .tool button,.tool select{font:inherit;font-weight:700;font-size:16px;border-radius:999px;border:2px solid rgba(242,240,228,.35);background:transparent;color:var(--chalk);padding:8px 16px;cursor:pointer;touch-action:manipulation}
 .tool button.on,.tool .go{background:var(--chalk);color:var(--board);border-color:var(--chalk)}
